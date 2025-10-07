@@ -1,0 +1,14 @@
+{
+  "name": "The Clean Code",
+  "short_name": "Clean Code",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#4b8f72",
+  "background_color": "#0b1210",
+  "display": "standalone"
+}
