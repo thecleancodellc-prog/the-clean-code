@@ -1,10 +1,12 @@
-export const metadata = { title: "Privacy" };
-
 export default function Privacy() {
   return (
-    <section className="container py-10">
-      <h1 className="text-3xl font-bold">Privacy Policy</h1>
-      <p className="mt-4 text-white/80">We respect your privacy. This placeholder policy will be updated before launch.</p>
-    </section>
+    <div className="container mx-auto px-6 py-10">
+      <h1 className="text-2xl font-bold mb-4">Privacy Policy</h1>
+      <p>
+        The Clean Code Co. respects your privacy. We do not sell your data. Any cookies used on
+        this site are only to improve user experience. For questions, contact us at
+        support@thecleancode.co.
+      </p>
+    </div>
   );
 }

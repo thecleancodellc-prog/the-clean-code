@@ -1,3 +1,4 @@
+// data/products.js
 export const products = [
   {
     id: "hexclad-12",
@@ -8,7 +9,7 @@ export const products = [
     rating: 4.8,
     pros: ["Even heat", "Dishwasher safe", "Long-lasting"],
     cons: ["Heavier than nonstick"],
-    category: "kitchen"
+    category: "kitchen",
   },
   {
     id: "castiron-10",
@@ -19,7 +20,7 @@ export const products = [
     rating: 4.7,
     pros: ["Virtually indestructible", "Naturally nonstick when seasoned"],
     cons: ["Needs seasoning"],
-    category: "kitchen"
+    category: "kitchen",
   },
   {
     id: "glass-storage",
@@ -30,6 +31,39 @@ export const products = [
     rating: 4.6,
     pros: ["No plastic leaching", "Microwave safe"],
     cons: ["Heavier than plastic"],
-    category: "kitchen"
-  }
+    category: "kitchen",
+  },
+  {
+    id: "glass-spray-bottle",
+    title: "16oz Glass Spray Bottle",
+    brand: "EcoBrand",
+    price: "$12.99",
+    affiliateUrl: "#",
+    rating: 4.8,
+    pros: ["Reusable", "Amber glass protects contents", "No plastic leaching"],
+    cons: ["Breakable if dropped"],
+    category: "cleaning",
+  },
+  {
+    id: "castile-soap",
+    title: "Pure Castile Soap Concentrate",
+    brand: "Dr. Bronner’s",
+    price: "$8.99",
+    affiliateUrl: "#",
+    rating: 4.9,
+    pros: ["Highly concentrated", "Multi-purpose", "Biodegradable"],
+    cons: ["Can dry hands if undiluted"],
+    category: "cleaning",
+  },
+  {
+    id: "bamboo-dish-brush",
+    title: "Bamboo Dish Brush Set",
+    brand: "ZeroWaste",
+    price: "$9.99",
+    affiliateUrl: "#",
+    rating: 4.7,
+    pros: ["Compostable", "Durable bristles", "Stylish natural look"],
+    cons: ["Not dishwasher safe"],
+    category: "kitchen",
+  },
 ];
