@@ -4,8 +4,8 @@ import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import Head from "next/head";
-import { products } from "../../data/products";
-import { shopMeta } from "../../utils/shopMeta";
+import { products } from "../../../data/products";
+import { shopMeta } from "../../../utils/shopMeta";
 import Link from "next/link";
 
 const fadeUp = {
