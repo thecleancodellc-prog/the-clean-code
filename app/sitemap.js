@@ -1,8 +1,19 @@
 export default async function sitemap() {
-  const base = "https://www.thecleancode.com";
-  const routes = ["", "/blog", "/guides", "/shop", "/about", "/affiliate-disclosure", "/privacy"].map((r) => ({
-    url: base + r,
-    lastModified: new Date().toISOString().split('T')[0]
+  const baseUrl = "https://www.thecleancode.co";
+
+  const staticPages = [
+    "",
+    "about",
+    "blog",
+    "shop",
+    "support",
+    "privacy",
+    "terms",
+    "sitemap",
+  ];
+
+  return staticPages.map((page) => ({
+    url: `${baseUrl}/${page}`,
+    lastModified: new Date().toISOString(),
   }));
-  return routes;
 }
