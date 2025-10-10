@@ -1,12 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Hero from "../components/Hero";
-import AdSlot from "../components/AdSlot";
-import AffiliateDisclosure from "../components/AffiliateDisclosure";
-import { products } from "../data/products";
-import ProductCard from "../components/ProductCard";
-import { posts } from "../data/posts";
+import Hero from "../../components/Hero";
+import AdSlot from "../../components/AdSlot";
+import AffiliateDisclosure from "../../components/AffiliateDisclosure";
+import { products } from "../../data/products";
+import ProductCard from "../../components/ProductCard";
+import { posts } from "../../data/posts";
 import Link from "next/link";
 
 const fadeUp = {
