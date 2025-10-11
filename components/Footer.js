@@ -45,8 +45,7 @@ export default function Footer() {
 
         {/* Affiliate & Legal Line */}
         <p className="mt-6 text-center text-xs text-white/50">
-          This site may contain affiliate links. As an Amazon Associate, we may earn
-          from qualifying purchases at no extra cost to you.
+          This site may contain affiliate links. The Clean Code earns from qualifying purchases.
         </p>
       </div>
     </footer>
