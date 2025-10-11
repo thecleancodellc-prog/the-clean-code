@@ -7,6 +7,7 @@ import getReadingTime from "../../../../utils/getReadingTime";
 import MetaPreview from "../../../../components/MetaPreview";
 import ShareValidationBar from "../../../../components/ShareValidationBar";
 import PageFadeWrapper from "../../../../components/PageFadeWrapper";
+import ProseFadeWrapper from "../../../../components/ProseFadeWrapper";
 
 export async function generateMetadata({ params }) {
   const post = posts.find((p) => p.slug === params.slug);
@@ -47,7 +48,6 @@ export default function BlogPost({ params }) {
 
   const readingTime = getReadingTime(post.content);
 
-  // Related posts (exclude current)
   const related = posts
     .filter((p) => p.slug !== post.slug)
     .sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0))
@@ -55,7 +55,9 @@ export default function BlogPost({ params }) {
 
   return (
     <PageFadeWrapper>
-      <section className="container py-10 max-w-3xl mx-auto">
+      <section className="container py-10 max-w-3xl mx-auto relative">
+
+        {/* ✅ SEO */}
         <SEO
           type="article"
           title={post.title}
@@ -64,53 +66,94 @@ export default function BlogPost({ params }) {
           image={post.cover || "/og-default.jpg"}
           author={post.author}
           datePublished={post.date}
-          relatedProducts={post.relatedProducts}
           readingTime={readingTime}
         />
 
-        <h1 className="text-3xl font-bold">{post.title}</h1>
-        <p className="mt-2 text-white/70">
-          {new Date(post.date).toLocaleDateString()}
-        </p>
-        <p className="text-white/60 text-sm mt-1">
-          ⏱ {readingTime.replace("PT", "").replace("M", "")}-minute read
-        </p>
+        {/* 🧾 Title & Meta */}
+        <div className="relative mb-10 text-center">
+          <h1 className="text-4xl sm:text-5xl font-bold mb-3 text-[var(--text)]">
+            {post.title}
+          </h1>
 
-        <AdSlot />
+          {/* ✨ Subtle top glow bar */}
+          <div
+            className="absolute left-1/2 -bottom-2 transform -translate-x-1/2 h-[2px] w-24 rounded-full opacity-80"
+            style={{
+              background:
+                "linear-gradient(90deg, transparent, rgba(52,211,153,0.8), transparent)",
+              boxShadow:
+                "0 0 10px rgba(52,211,153,0.6), 0 0 25px rgba(52,211,153,0.3)",
+            }}
+          />
 
+          <p className="text-white/70 mt-4">
+            {new Date(post.date).toLocaleDateString()}
+          </p>
+          <p className="text-white/60 text-sm mt-1 mb-6">
+            ⏱ {readingTime.replace("PT", "").replace("M", "")}-minute read
+          </p>
+        </div>
+
+        {/* 💰 Inline Ad */}
+        <AdSlot format="auto" style={{ marginBottom: "2rem" }} />
+
+        {/* 🖼️ Cover Image */}
         {post.cover && (
           <img
             src={post.cover}
             alt={post.title}
-            className="mt-6 w-full rounded-lg"
+            className="w-full rounded-2xl mb-8 object-cover shadow-lg"
           />
         )}
 
-        <div
-          className="prose prose-invert mt-6 max-w-none"
-          dangerouslySetInnerHTML={{ __html: post.content || "" }}
-        />
+        {/* 🧠 Main Content */}
+        <ProseFadeWrapper>
+          <div dangerouslySetInnerHTML={{ __html: post.content || "" }} />
+        </ProseFadeWrapper>
 
-        {/* 🧠 DEV-ONLY Preview & Validation */}
-        {process.env.NODE_ENV === "development" && (
-          <>
-            <MetaPreview
-              title={post.title}
-              description={post.excerpt}
-              image={post.cover}
-              url={`https://www.thecleancode.co/blog/${post.slug}`}
-              type="article"
-            />
-            <ShareValidationBar
-              url={`https://www.thecleancode.co/blog/${post.slug}`}
-            />
-          </>
+        {/* 🛡️ Amazon Affiliate Disclosure */}
+<p className="text-xs text-white/60 mt-8 italic text-center">
+  As an Amazon Associate, The Clean Code earns from qualifying purchases.
+</p>
+
+
+        {/* 💡 Product Spotlight */}
+        {post.product && (
+          <div className="mt-12 p-6 border border-white/10 bg-white/5 rounded-xl text-center shadow-md">
+            <h2 className="text-2xl font-semibold mb-4 text-emerald-300">
+              Featured Product
+            </h2>
+            {post.product.image && (
+              <img
+                src={post.product.image}
+                alt={post.product.title}
+                className="w-48 h-48 mx-auto rounded-lg mb-4 object-cover shadow-lg"
+              />
+            )}
+            <h3 className="text-lg font-semibold text-white mb-2">
+              {post.product.title}
+            </h3>
+            <p className="text-white/70 max-w-md mx-auto mb-4">
+              {post.product.description}
+            </p>
+            <a
+              href={post.product.affiliateUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block rounded-xl bg-[var(--accent)] px-6 py-3 font-semibold text-white no-underline hover:bg-green-700 transition"
+            >
+              View on Amazon →
+            </a>
+          </div>
         )}
 
-        {/* Related Posts */}
+        {/* 📢 Ad below content */}
+        <AdSlot format="auto" style={{ marginTop: "3rem" }} />
+
+        {/* 🪄 Related Posts */}
         {related.length > 0 && (
           <div className="mt-16 border-t border-white/10 pt-10">
-            <h2 className="text-2xl font-semibold mb-6 text-center">
+            <h2 className="text-2xl font-semibold mb-6 text-center text-emerald-300">
               You May Also Like
             </h2>
 
@@ -119,7 +162,7 @@ export default function BlogPost({ params }) {
                 <Link
                   key={item.slug}
                   href={`/blog/${item.slug}`}
-                  className="group block border border-white/10 rounded-lg overflow-hidden bg-white/5 hover:border-white/20 transition-all"
+                  className="group block border border-white/10 rounded-xl overflow-hidden bg-white/5 hover:border-white/20 transition-all hover-scale"
                 >
                   {item.cover && (
                     <img
@@ -147,6 +190,16 @@ export default function BlogPost({ params }) {
             </div>
           </div>
         )}
+
+        {/* 🔙 Back to Blog */}
+        <div className="mt-12 text-center">
+          <Link
+            href="/blog"
+            className="text-green-400 hover:underline font-medium"
+          >
+            ← Back to Blog
+          </Link>
+        </div>
       </section>
     </PageFadeWrapper>
   );
