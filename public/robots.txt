@@ -1,3 +1,11 @@
+# robots.txt for The Clean Code
 User-agent: *
 Allow: /
-Sitemap: https://www.thecleancode.com/sitemap.xml
+
+# Disallow utility or backend routes (optional)
+Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
+
+# Point crawlers to your sitemap for faster indexing
+Sitemap: https://www.thecleancode.co/sitemap.xml

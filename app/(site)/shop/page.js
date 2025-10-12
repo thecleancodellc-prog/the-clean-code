@@ -33,8 +33,8 @@ export default function ShopPage() {
 function ShopContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-
   const initialCategory = searchParams.get("category") || "All";
+
   const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [meta, setMeta] = useState(shopMeta[initialCategory] || shopMeta.All);
 
@@ -68,36 +68,40 @@ function ShopContent() {
       </Head>
 
       <motion.section
-        className="container py-10"
+        className="container py-12"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.25 }}
         variants={staggerContainer}
       >
+        {/* 🏷️ Title & Intro */}
         <motion.h1
           variants={fadeUp}
-          className="text-3xl font-bold text-center"
+          className="text-4xl font-bold text-center mb-3 bg-gradient-to-r from-emerald-300 via-emerald-400 to-green-600 bg-clip-text text-transparent drop-shadow-[0_2px_10px_rgba(52,211,153,0.25)]"
         >
           The Clean Code Shop
         </motion.h1>
+
         <motion.p
           variants={fadeUp}
-          className="mt-2 text-white/70 text-center"
+          className="text-center text-emerald-200/90 mb-12 max-w-2xl mx-auto leading-relaxed tracking-wide drop-shadow-[0_0_6px_rgba(52,211,153,0.35)]"
         >
-          Curated clean-living essentials. Explore our trusted picks below.
+          Curated clean-living essentials, tested and trusted. Every product
+          earns a <span className="font-semibold text-emerald-300">TCC Score</span> —
+          our measure of purity, sustainability, and transparency.
         </motion.p>
 
-        {/* Filter Bar */}
+        {/* 🧩 Category Filter */}
         <motion.div
           variants={staggerContainer}
-          className="flex flex-wrap justify-center gap-3 mt-8 mb-10"
+          className="flex flex-wrap justify-center gap-3 mb-10"
         >
           {categories.map((cat) => (
             <motion.button
               key={cat}
               variants={fadeUp}
               onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 ${
                 activeCategory === cat
                   ? "bg-gradient-to-r from-[var(--accent)] to-emerald-600 text-white shadow-md"
                   : "bg-white/10 text-white/80 hover:bg-white/20"
@@ -108,34 +112,20 @@ function ShopContent() {
           ))}
         </motion.div>
 
-        {/* Product Grid */}
+        {/* 🛍️ Product Grid */}
         <motion.div
-          className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
           variants={staggerContainer}
         >
           {filteredProducts.map((p) => (
             <motion.div key={p.id} variants={fadeUp}>
               <Link
                 href={`/shop/${p.id}`}
-                className="no-underline group hover-scale"
+                className="group no-underline block hover-scale"
               >
-                <article className="rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-white/20 transition-all duration-300 h-full flex flex-col justify-between">
-                  <header className="flex items-start justify-between gap-4 mb-3">
-                    <div>
-                      <h3 className="text-lg font-semibold group-hover:text-green-400 transition-colors">
-                        {p.title}
-                      </h3>
-                      <p className="text-sm text-white/70">
-                        {p.brand} · {p.price}
-                      </p>
-                    </div>
-                    {p.rating && (
-                      <div className="rounded-xl bg-[var(--accent)]/20 px-2 py-1 text-xs text-white">
-                        ★ {p.rating}
-                      </div>
-                    )}
-                  </header>
-
+                <article className="rounded-2xl border border-white/10 bg-white/5 p-5 hover:border-emerald-400/30 transition-all duration-300 h-full flex flex-col justify-between shadow-[0_0_25px_rgba(0,0,0,0.15)] hover:shadow-[0_0_30px_rgba(52,211,153,0.25)]">
+                  
+                  {/* Product Image */}
                   {p.image && (
                     <img
                       src={p.image}
@@ -144,15 +134,34 @@ function ShopContent() {
                     />
                   )}
 
+                  {/* Product Title & Brand */}
+                  <header className="flex flex-col mb-3">
+                    <h3 className="text-lg font-semibold mb-1 group-hover:text-emerald-300 transition-colors">
+                      {p.title}
+                    </h3>
+                    <p className="text-sm text-white/70">
+                      {p.brand} · {p.price}
+                    </p>
+                  </header>
+
+                  {/* Pros Summary */}
                   {p.pros && (
-                    <ul className="grid list-disc gap-1 pl-5 text-sm text-white/80 mb-3">
+                    <ul className="grid list-disc gap-1 pl-5 text-sm text-white/80 mb-4">
                       {p.pros.slice(0, 2).map((x, i) => (
                         <li key={i}>{x}</li>
                       ))}
                     </ul>
                   )}
 
-                  <p className="mt-auto text-sm text-green-400 font-medium group-hover:underline">
+                  {/* Rating + TCC */}
+                  <div className="flex items-center justify-between text-sm text-white/80">
+                    {p.rating && <span>⭐ {p.rating}</span>}
+                    <span className="px-2 py-0.5 rounded-md bg-emerald-700/40 text-emerald-300 text-xs font-semibold">
+                      TCC {p.tccScore || "95"}
+                    </span>
+                  </div>
+
+                  <p className="mt-3 text-emerald-400 text-sm font-medium group-hover:underline">
                     View Details →
                   </p>
                 </article>
@@ -161,6 +170,7 @@ function ShopContent() {
           ))}
         </motion.div>
 
+        {/* Empty State */}
         {filteredProducts.length === 0 && (
           <motion.p
             variants={fadeUp}
