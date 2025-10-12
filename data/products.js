@@ -91,11 +91,11 @@ export const products = [
     transparency: "Full ingredient list disclosed on label.",
   },
   {
-    id: "bamboo-dish-brush",
-    title: "Bamboo Dish Brush Set",
-    brand: "ZeroWaste",
+    id: "palm-pot-brushes",
+    title: "Palm Pot Brushes(3pc)",
+    brand: "Greenth Pro",
     price: "$9.99",
-    affiliateUrl: "https://amzn.to/example-bamboobrush",
+    affiliateUrl: "https://amzn.to/48rcomH",
     rating: 4.7,
     tccScore: 93,
     pros: ["Compostable handles", "Durable bristles", "Plastic-free design"],
@@ -103,17 +103,17 @@ export const products = [
     category: "kitchen",
     summary:
       "Sustainable bamboo brush set that replaces plastic sponges with compostable, durable natural materials.",
-    image: "/images/products/bamboo-dish-brush.jpg",
+    image: "https://m.media-amazon.com/images/I/71HBCiwXz+L._AC_SX679_.jpg",
     relatedBlogs: ["plastic-free-kitchen", "eco-cleaning-tools"],
     sustainability: "Compostable and renewable materials.",
     transparency: "No hidden coatings or adhesives.",
   },
   {
     id: "swedish-dishcloths",
-    title: "Reusable Swedish Dishcloths (10-Pack)",
-    brand: "Etee",
+    title: "Reusable Swedish Dishcloths (5-Pack)",
+    brand: "FEBU",
     price: "$19.99",
-    affiliateUrl: "https://amzn.to/example-swedishdishcloths",
+    affiliateUrl: "https://amzn.to/475Qser",
     rating: 4.7,
     tccScore: 95,
     pros: ["Compostable material", "Absorbs 20x its weight", "Machine washable"],
@@ -121,7 +121,7 @@ export const products = [
     category: "kitchen",
     summary:
       "Eco-friendly Swedish dishcloths that replace up to 15 rolls of paper towels — reusable, washable, and biodegradable.",
-    image: "/images/products/swedish-dishcloths.jpg",
+    image: "https://m.media-amazon.com/images/I/81RbS1LFuVL._AC_SX679_.jpg",
     relatedBlogs: ["eco-cleaning-tools", "reduce-paper-waste"],
     sustainability: "Fully compostable cellulose-cotton blend.",
     transparency: "Certified plastic-free and biodegradable.",
@@ -130,8 +130,8 @@ export const products = [
     id: "wool-dryer-balls",
     title: "Wool Dryer Balls (6-Pack)",
     brand: "Smart Sheep",
-    price: "$16.99",
-    affiliateUrl: "https://amzn.to/example-wooldryerballs",
+    price: "$19.95",
+    affiliateUrl: "https://amzn.to/4n5OTmO",
     rating: 4.8,
     tccScore: 97,
     pros: ["Reduces drying time", "Softens clothes naturally", "Reusable for 1,000+ loads"],
@@ -139,7 +139,7 @@ export const products = [
     category: "laundry",
     summary:
       "All-natural wool dryer balls replace single-use dryer sheets — reduce static and drying time while softening clothes safely.",
-    image: "/images/products/wool-dryer-balls.jpg",
+    image: "https://m.media-amazon.com/images/I/71Vp0eBeD-L._AC_SX679_.jpg",
     relatedBlogs: ["hidden-laundry-toxins", "eco-laundry-hacks"],
     sustainability: "Zero-waste and reusable for years.",
     transparency: "Pure New Zealand wool, no fillers.",
@@ -148,8 +148,8 @@ export const products = [
     id: "beeswax-wraps",
     title: "Beeswax Food Wraps (3-Pack)",
     brand: "Bee’s Wrap",
-    price: "$18.99",
-    affiliateUrl: "https://amzn.to/example-beeswaxwraps",
+    price: "$17.99",
+    affiliateUrl: "https://amzn.to/4nKWqs6",
     rating: 4.6,
     tccScore: 94,
     pros: ["Reusable 100+ times", "Plastic-free", "Keeps food fresh"],
@@ -157,17 +157,17 @@ export const products = [
     category: "kitchen",
     summary:
       "Reusable beeswax wraps that replace plastic wrap — moldable, breathable, and perfect for sandwiches, produce, and leftovers.",
-    image: "/images/products/beeswax-wraps.jpg",
+    image: "https://m.media-amazon.com/images/I/71k1q49GlxL._AC_SX679_.jpg",
     relatedBlogs: ["plastic-free-kitchen", "eco-food-storage"],
     sustainability: "Reusable and compostable after long-term use.",
     transparency: "Made from organic cotton, beeswax, and tree resin.",
   },
   {
     id: "bamboo-toothbrush",
-    title: "Bamboo Toothbrush Set (4-Pack)",
-    brand: "Humble Brush",
+    title: "Bamboo Toothbrush Set (10-Pack)",
+    brand: "VIVAGO",
     price: "$10.99",
-    affiliateUrl: "https://amzn.to/example-bambootoothbrush",
+    affiliateUrl: "https://amzn.to/3KQRxPI",
     rating: 4.7,
     tccScore: 98,
     pros: ["Compostable handles", "Soft BPA-free bristles", "Zero-waste packaging"],
@@ -175,7 +175,7 @@ export const products = [
     category: "bathroom",
     summary:
       "Zero-waste bamboo toothbrushes with compostable handles and soft bristles — sustainable oral care without plastic.",
-    image: "/images/products/bamboo-toothbrush.jpg",
+    image: "https://m.media-amazon.com/images/I/81eEsIolGQL._AC_SX679_.jpg",
     relatedBlogs: ["zero-waste-bathroom", "eco-dental-care"],
     sustainability: "100% biodegradable handle, recyclable packaging.",
     transparency: "Full material disclosure on packaging.",
@@ -184,8 +184,8 @@ export const products = [
     id: "glass-spice-jars",
     title: "Glass Spice Jars with Labels (24-Pack)",
     brand: "Aozita",
-    price: "$25.99",
-    affiliateUrl: "https://amzn.to/example-spicejars",
+    price: "$28.99",
+    affiliateUrl: "https://amzn.to/47hIJLz",
     rating: 4.8,
     tccScore: 93,
     pros: ["Reusable glass jars", "Includes labels & funnel", "No plastic contact"],
@@ -193,27 +193,38 @@ export const products = [
     category: "kitchen",
     summary:
       "Organize your pantry with reusable glass spice jars — plastic-free and stylish with customizable labels.",
-    image: "/images/products/glass-spice-jars.jpg",
+    image: "https://m.media-amazon.com/images/I/81nZpU5wz4L._AC_SX679_.jpg",
     relatedBlogs: ["eco-kitchen-storage", "organize-pantry"],
     sustainability: "Reusable glass and metal lids, no plastic.",
     transparency: "Clearly labeled, easy to refill and clean.",
   },
   {
-    id: "oil-diffuser",
-    title: "Stainless Steel Essential Oil Diffuser",
-    brand: "Vitruvi",
-    price: "$119.00",
-    affiliateUrl: "https://amzn.to/example-oildiffuser",
-    rating: 4.9,
-    tccScore: 97,
-    pros: ["Non-toxic scenting", "Durable stainless design", "Auto shutoff safety"],
-    cons: ["Higher upfront cost"],
-    category: "home",
-    summary:
-      "Premium stainless steel essential oil diffuser that freshens the air naturally without synthetic fragrances or heat.",
-    image: "/images/products/oil-diffuser.jpg",
-    relatedBlogs: ["clean-air-home", "natural-fragrance"],
-    sustainability: "Durable materials for long-term use.",
-    transparency: "No plastic interior components.",
-  },
+  id: "lecdura-glass-diffuser",
+  title: "Lecdura Glass Essential Oil Diffuser (80 mL)",
+  brand: "Lecdura",
+  price: "$39.99",   // adjust based on live listing
+  affiliateUrl: "https://amzn.to/3J84nIT",
+  rating: 4.2,        // estimate / you can leave or change after you see reviews
+  tccScore: 95,        // arbitrarily high if you believe it meets your standards
+  pros: [
+    "Glass reservoir and cover preserve purity",
+    "Natural wood base aesthetic",
+    "Auto-off waterless protection",
+    "USB-powered for flexible placement"
+  ],
+  cons: [
+    "Includes LED lighting (not purely minimal)",
+    "Water-based mist (not true nebulizer)",
+    "Return rate is higher than ideal (check user reviews)"
+  ],
+  category: "home",
+  summary:
+    "80 mL glass and wood ultrasonic essential oil diffuser combining minimalist style with functionality and auto-off safety.",
+  image: "https://m.media-amazon.com/images/I/81uvUfrlt6L._AC_SX679_.jpg",  // you'll want the actual image URL
+  relatedBlogs: ["clean-air-home", "essential-oils-guide"],
+  sustainability: "No plastic reservoir and easy to clean — fewer replacements.",
+  transparency: "Full material disclosure: glass, wood, standard electronics."
+}
+
+
 ];
