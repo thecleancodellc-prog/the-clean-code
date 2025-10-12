@@ -388,5 +388,83 @@ export const posts = [
     <p>Essential oils can transform your cleaning, your air, and even your mood—but only when used with knowledge and respect. Choose reputable brands, dilute wisely, and remember: natural doesn’t mean risk-free. Start small, stay consistent, and enjoy a cleaner, calmer space that smells like nature—not chemicals.</p>
   `,
 },
+// 🆕 5. Clean Cookware Guide
+  {
+    slug: "clean-cookware-guide",
+    title: "The Clean Cookware Guide: Healthier Materials for Everyday Cooking",
+    excerpt:
+      "Discover which cookware materials are safest for your health and how to build a toxin-free kitchen.",
+    date: "2025-10-11",
+    cover: "/images/blogs/clean-cookware-guide.jpg",
+    featured: true,
+    relatedProducts: ["hexclad-12", "castiron-10"],
+    content: `
+      <h2>Why Cookware Materials Matter</h2>
+      <p>Your cookware directly impacts the quality and safety of your meals. Learn how stainless steel and cast iron outperform nonstick coatings when it comes to long-term health.</p>
+    `,
+  },
 
+  // 🆕 6. Eco Cleaning Tools
+  {
+    slug: "eco-cleaning-tools",
+    title: "Eco Cleaning Tools That Actually Work",
+    excerpt:
+      "Swap plastic sponges and wasteful paper towels for durable, sustainable tools that clean better and last longer.",
+    date: "2025-10-13",
+    cover: "/images/blogs/eco-cleaning-tools.jpg",
+    featured: true,
+    relatedProducts: ["bamboo-dish-brush", "swedish-dishcloths"],
+    content: `
+      <h2>Why Sustainable Tools Matter</h2>
+      <p>Microplastics from cleaning sponges contribute to indoor air pollution. Opt for compostable, long-lasting options instead.</p>
+    `,
+  },
+
+  // 🆕 7. Plastic-Free Kitchen
+  {
+    slug: "plastic-free-kitchen",
+    title: "Building a Plastic-Free Kitchen",
+    excerpt:
+      "Transform your kitchen into a low-waste, plastic-free zone with these simple swaps and organizing tips.",
+    date: "2025-10-14",
+    cover: "/images/blogs/plastic-free-kitchen.jpg",
+    featured: false,
+    relatedProducts: ["glass-storage", "beeswax-wraps", "glass-spice-jars"],
+    content: `
+      <h2>Why Go Plastic-Free?</h2>
+      <p>Plastics can leach micro-particles into your food and environment. Glass, steel, and natural materials are safer alternatives.</p>
+    `,
+  },
+
+  // 🆕 8. Clean Air Home
+  {
+    slug: "clean-air-home",
+    title: "Clean Air at Home: Reducing Toxins and Freshening Naturally",
+    excerpt:
+      "Indoor air can be 2–5x more polluted than outdoors. Here’s how to freshen your space naturally without synthetic sprays.",
+    date: "2025-10-15",
+    cover: "/images/blogs/clean-air-home.jpg",
+    featured: true,
+    relatedProducts: ["oil-diffuser", "glass-spray-bottle"],
+    content: `
+      <h2>The Hidden Sources of Indoor Toxins</h2>
+      <p>Air fresheners, candles, and cleaning sprays often emit VOCs that linger indoors. Natural alternatives make a big difference.</p>
+    `,
+  },
+
+  // 🆕 9. Hidden Laundry Toxins (short variant for linking)
+  {
+    slug: "hidden-laundry-toxins-mini",
+    title: "Hidden Laundry Toxins: What’s Lurking in Your Detergent",
+    excerpt:
+      "Your clothes might smell fresh, but many detergents contain harmful residues. Here’s how to switch to clean laundry habits.",
+    date: "2025-10-12",
+    cover: "/images/blogs/hidden-laundry-toxins.jpg",
+    featured: false,
+    relatedProducts: ["wool-dryer-balls", "castile-soap"],
+    content: `
+      <h2>Clean Laundry Alternatives</h2>
+      <p>Try natural soaps and wool dryer balls to keep your laundry routine fresh without harmful residues.</p>
+    `,
+  },
 ];
