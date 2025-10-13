@@ -225,7 +225,7 @@ export const posts = [
     "Your plug-in air freshener might smell like a tropical vacation — but your lungs know better. Here’s the clean way to make your home smell amazing.",
   date: "2025-10-09",
   author: { name: "The Clean Code Team" },
-  cover: "/images/air-fresheners.jpg",
+  cover: "/images/blogs/air-fresheners.jpg",
   featured: false,
   categories: ["Home", "Air Quality", "Wellness", "Lifestyle"],
   seo: {
@@ -338,7 +338,7 @@ export const posts = [
     "Essential oils can refresh your space and mood—but some can also irritate your skin or harm pets. Here’s how to use them safely and effectively.",
   date: "2025-10-11",
   author: { name: "The Clean Code Team" },
-  cover: "/images/essential-oils.jpg",
+  cover: "/images/blogs/essential-oils.jpg",
   featured: false,
   categories: ["Wellness", "Home", "DIY"],
   seo: {
@@ -671,7 +671,7 @@ export const posts = [
 
 
   // 🆕 7. Plastic-Free Kitchen
-  {
+ {
   slug: "plastic-free-kitchen",
   title: "Building a Plastic-Free Kitchen",
   excerpt:
@@ -693,7 +693,9 @@ export const posts = [
       "Step-by-step guide to creating a plastic-free kitchen using glass, wood, and stainless steel. Learn the best swaps for containers, wraps, and utensils."
   },
   content: `
-    <p>Every time you open your fridge or pantry, there’s a good chance plastic is part of the picture — from cling wrap to takeout containers and grocery packaging. The problem? Many plastics can leach chemicals like BPA and phthalates into your food, especially when heated. These compounds have been linked to hormone disruption and long-term health issues. The good news: building a plastic-free kitchen is easier than it sounds — and it looks better, too.</p>
+    <p>The first time I tried to “go plastic-free,” I stood in my kitchen surrounded by cling wrap, takeout tubs, and mismatched lids—and realized how much plastic runs our homes. It’s everywhere. But here’s the thing: once you start swapping a few items, it becomes surprisingly easy (and addictive). Your space starts to feel calmer, cleaner, and more intentional. And it’s not just about looks—it’s about health and longevity too.</p>
+
+    <p>Most plastics can leach small amounts of chemicals like BPA and phthalates into food—especially when heated or scratched. Over time, that exposure adds up. Replacing those items with glass, stainless steel, and natural fibers means fewer toxins and less waste. Let’s go step by step.</p>
 
     <!-- 📍 Ad #1 -->
     <div class="my-8">
@@ -706,29 +708,29 @@ export const posts = [
     </div>
 
     <h2>🌿 Why Go Plastic-Free?</h2>
-    <p>Plastics never truly go away — they just break down into microplastics that linger in air, soil, and water. Every plastic container or bag you replace with glass, stainless steel, or wood prevents waste and protects your food from contamination. Over time, these swaps also save money because they last for decades instead of months.</p>
+    <p>Plastic never really disappears—it just gets smaller. Those microplastics end up in our water, air, and even food. Every swap you make—one jar, one utensil, one grocery bag—is a long-term investment in cleaner living. And here’s the secret most people miss: a plastic-free kitchen isn’t just sustainable—it’s also more <em>beautiful</em> and functional. Glass jars lined on a shelf or a bamboo drying rack doesn’t just work well, it feels peaceful.</p>
 
-    <p>Beyond personal health, a plastic-free kitchen supports cleaner oceans and less landfill waste. Every time you reach for a glass jar instead of a plastic tub, you’re voting for longevity and sustainability.</p>
+    <p>Going plastic-free is less about perfection and more about progress. Start small. Replace what you use daily, not everything at once. Each time an old plastic container cracks or warps, upgrade it to something lasting. Over a year, those small shifts create a big visual and environmental impact.</p>
 
     <h2>🥣 1. Glass Storage Containers</h2>
-    <p>When it comes to storing leftovers or meal prep, <a href="/shop/glass-storage" class="text-green-400 hover:underline">glass storage containers</a> are your best friend. They’re oven-safe, microwave-safe, and don’t absorb stains or odors. The transparency helps you see what’s inside, which means less forgotten food and less waste.</p>
+    <p>Leftovers never looked better. <a href="/shop/glass-storage" class="text-green-400 hover:underline">Glass storage containers</a> keep food fresh, reheat beautifully, and stack neatly. You can bake in them, see what’s inside at a glance, and skip the plastic lids that stain and warp over time.</p>
     <ul>
-      <li><strong>Pros:</strong> Non-toxic, long-lasting, easy to clean, aesthetic.</li>
-      <li><strong>Cons:</strong> Slightly heavier and breakable if dropped.</li>
-      <li><strong>Best use:</strong> Leftovers, batch cooking, and pantry organization.</li>
+      <li><strong>Pros:</strong> Non-toxic, durable, see-through, and endlessly reusable.</li>
+      <li><strong>Cons:</strong> Slightly heavier and can break if dropped.</li>
+      <li><strong>Best use:</strong> Leftovers, meal prep, and pantry organization.</li>
     </ul>
 
-    <p>If you’re upgrading gradually, start with the containers you use daily — lunch boxes, prep bowls, and leftover dishes. Swap those first and you’ll notice the difference immediately.</p>
+    <p>Tip: Start with the containers you touch most often—your lunch box, prep bowls, and fridge leftovers. When they all match and stack, your fridge suddenly looks like a wellness ad.</p>
 
     <h2>🍯 2. Beeswax Wraps Instead of Plastic Wrap</h2>
-    <p>Beeswax wraps are a reusable, biodegradable alternative to single-use plastic wrap. They’re made by infusing cotton fabric with beeswax, jojoba oil, and tree resin, creating a flexible covering that seals with the warmth of your hands. They’re perfect for wrapping cheese, sandwiches, produce, or covering bowls.</p>
+    <p>When I first swapped plastic wrap for beeswax wraps, I was skeptical. But once I sealed a sandwich and saw it hold perfectly, I never looked back. Beeswax wraps mold around bowls or cheese just using the warmth of your hands—and they smell faintly of honey. No crinkly plastic, no waste.</p>
     <ul>
       <li><strong>Pros:</strong> Reusable up to a year, compostable, naturally antimicrobial.</li>
       <li><strong>Cons:</strong> Not for raw meat or hot foods.</li>
-      <li><strong>Best use:</strong> Short-term food storage and snack wraps.</li>
+      <li><strong>Best use:</strong> Wrapping snacks, cheese, or covering bowls.</li>
     </ul>
 
-    <p>To clean, simply rinse with cool water and mild soap, then air dry. When they wear out, cut them up and toss them in your compost. Check out <a href="/shop/beeswax-wraps" class="text-green-400 hover:underline">these reusable beeswax wraps</a> for a cleaner swap that’s as functional as it is beautiful.</p>
+    <p>To clean, rinse with cool water and mild soap—no hot water! When they wear out, cut them into strips and compost them. Try <a href="/shop/beeswax-wraps" class="text-green-400 hover:underline">these reusable beeswax wraps</a>—they’re as aesthetic as they are functional.</p>
 
     <!-- 📍 Ad #2 -->
     <div class="my-8">
@@ -741,25 +743,25 @@ export const posts = [
     </div>
 
     <h2>🥄 3. Stainless Steel and Wooden Utensils</h2>
-    <p>Plastic utensils can release microplastics into food when exposed to heat. Switching to stainless steel, silicone, or untreated wood not only looks elegant but also eliminates a major source of kitchen toxins. Bonus: they last a lifetime.</p>
+    <p>Plastic utensils melt, warp, and sometimes release microplastics into food—especially when used with heat. Switching to stainless steel and wood gives your kitchen that timeless, earthy feel. It’s one of the easiest upgrades with instant impact.</p>
     <ul>
-      <li><strong>Pros:</strong> Non-toxic, sturdy, heat-resistant.</li>
-      <li><strong>Cons:</strong> Requires a utensil holder to stay organized.</li>
-      <li><strong>Best use:</strong> Cooking, serving, and food prep.</li>
+      <li><strong>Pros:</strong> Non-toxic, durable, and heat-resistant.</li>
+      <li><strong>Cons:</strong> Needs a holder or drawer organizer.</li>
+      <li><strong>Best use:</strong> Everyday cooking and serving.</li>
     </ul>
 
-    <p>For baking, look for silicone spatulas certified BPA- and BPS-free. For cooking, solid wood spoons and bamboo tongs add warmth to your kitchen and won’t scratch cookware.</p>
+    <p>For baking, look for BPA-free silicone spatulas. For cooking, wood spoons and bamboo tongs add natural texture and last for years. Every time you stir soup or flip veggies, it just feels right.</p>
 
     <h2>🧂 4. Glass Spice Jars & Bulk Refills</h2>
-    <p>Most spice containers are made of plastic — and they often sit for months or years near your stove’s heat. Over time, that exposure can cause leaching. Instead, store your herbs and spices in <a href="/shop/glass-spice-jars" class="text-green-400 hover:underline">glass spice jars</a> with airtight bamboo lids. They’re not only safer but look uniform and premium on your shelf.</p>
+    <p>Spices often come in cheap plastic bottles that sit for months by your stove—hello, slow leaching. Switch to <a href="/shop/glass-spice-jars" class="text-green-400 hover:underline">glass spice jars</a> with bamboo lids for a toxin-free, organized look. Label them neatly and line them up—you’ll feel like you stepped into a cooking show every time you reach for paprika.</p>
 
-    <p>Buy your spices from bulk bins or refill stores to avoid the constant packaging waste. Label each jar neatly and store them in a drawer or magnetic rack to keep your counters clean.</p>
+    <p>Buy from bulk bins or refill shops to reduce packaging waste. You’ll save money and can control freshness by buying just what you need.</p>
 
     <h2>💧 5. Ditch Plastic Bottles and Jugs</h2>
-    <p>Filtered tap water in glass pitchers or stainless steel bottles is healthier and far less wasteful than buying water in plastic jugs. If your local water quality is a concern, invest in a countertop filter with replaceable charcoal cartridges. It’s a small upfront cost that pays off in both purity and peace of mind.</p>
+    <p>Filtered tap water in glass pitchers or stainless bottles is cheaper, cleaner, and kinder to the planet than plastic jugs. If your local water quality worries you, invest in a countertop carbon filter or Berkey-style purifier. Your coffee, tea, and even ice cubes will taste better for it.</p>
 
     <h2>🛒 6. Bulk Shopping and Refill Stations</h2>
-    <p>Many grocery stores now offer bulk sections for grains, spices, oils, and cleaning supplies. Bring your own reusable containers or cloth bags and fill them up — no plastic packaging required. Over time, this habit saves both money and storage space while supporting local sustainable shops.</p>
+    <p>Bring your own containers to the bulk section—it’s the easiest way to cut plastic waste. Refill grains, beans, and nuts directly into jars or cloth bags. The first trip feels a little awkward; the second feels empowering. Plus, you’ll start forming relationships with local refill stores and sustainable shops.</p>
 
     <!-- 📍 Ad #3 -->
     <div class="my-8">
@@ -772,16 +774,17 @@ export const posts = [
     </div>
 
     <h2>🏡 Organizing a Plastic-Free Kitchen</h2>
-    <p>Decluttering plastic doesn’t just change how your kitchen functions — it changes how it feels. Line shelves with glass jars, stack stainless steel bowls, and hang wood utensils within reach. Keep a small compost bin near your prep station and a drawer for reusables like cloth napkins and mesh produce bags.</p>
+    <p>Once the swaps start adding up, organization becomes part of the joy. Keep reusable cloth bags in a drawer near the door, store food in matching glass sets, and keep utensils visible in a ceramic holder. A small countertop compost bin keeps food waste out of sight but easy to access.</p>
 
-    <p>For refrigerator storage, use glass containers with bamboo lids and cotton produce bags to keep greens crisp. Label everything clearly to make sustainable choices the default instead of the exception.</p>
+    <p>For your fridge, glass containers with bamboo lids are perfect for visibility and freshness. Cotton produce bags keep greens crisp, and labeling makes sustainable habits effortless.</p>
 
     <h2>🌸 Final Thoughts</h2>
-    <p>Going plastic-free isn’t about perfection — it’s about progress. Each swap you make reduces toxins in your home and waste in the world. Over time, these small, intentional changes create a ripple effect: a healthier home, a cleaner planet, and a lifestyle rooted in awareness.</p>
+    <p>Going plastic-free isn’t about being perfect—it’s about being mindful. Each little change—whether it’s a new jar, wrap, or utensil—shifts your environment toward calm and clarity. You’ll open your fridge or pantry and feel proud, not overwhelmed. It’s progress you can see, touch, and live with every day.</p>
 
-    <p class="italic text-white/70 mt-6">Start small — replace one plastic container with glass, one roll of plastic wrap with beeswax. Soon, your kitchen will not only look cleaner but *feel* cleaner — free from plastic and full of life.</p>
+    <p class="italic text-white/70 mt-6">Start with one drawer, one shelf, or one habit. Before long, your kitchen will tell the story of a life built with intention—free from plastic, full of purpose.</p>
   `
 },
+
 
 
   // 🆕 8. Clean Air Home
