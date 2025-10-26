@@ -8,7 +8,7 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const closeBtnRef = useRef(null);
 
-  // Prevent background scroll (with cleanup)
+  // Prevent background scroll while drawer is open
   useEffect(() => {
     const original = document.body.style.overflow;
     document.body.style.overflow = open ? "hidden" : original || "";
@@ -17,16 +17,16 @@ export default function Header() {
     };
   }, [open]);
 
-  // Focus and ESC key handling
+  // Focus close button & ESC to close
   useEffect(() => {
-    if (open) {
-      if (closeBtnRef.current) closeBtnRef.current.focus();
-      const onKey = (e) => {
-        if (e.key === "Escape") setOpen(false);
-      };
-      window.addEventListener("keydown", onKey);
-      return () => window.removeEventListener("keydown", onKey);
-    }
+    if (!open) return;
+    if (closeBtnRef.current) closeBtnRef.current.focus();
+
+    const onKey = (e) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
   const links = [
@@ -47,8 +47,8 @@ export default function Header() {
             </span>
           </Link>
 
-          {/* Center — Logo */}
-          <div className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 sm:block z-10">
+          {/* Center — Logo (desktop) */}
+          <div className="absolute left-1/2 top-1/2 z-10 hidden -translate-x-1/2 -translate-y-1/2 sm:block">
             <Image
               src="/the-clean-code-logo.png"
               alt="The Clean Code Logo"
@@ -62,7 +62,11 @@ export default function Header() {
           {/* Right — Desktop Nav */}
           <nav className="hidden items-center gap-6 text-sm text-gray-300 md:flex">
             {links.map((link) => (
-              <Link key={link.href} href={link.href} className="transition hover:text-white">
+              <Link
+                key={link.href}
+                href={link.href}
+                className="transition hover:text-white"
+              >
                 {link.label}
               </Link>
             ))}
@@ -91,25 +95,29 @@ export default function Header() {
 
       {/* Mobile Drawer */}
       {open && (
-        <div className="fixed inset-0 z-50 md:hidden">
-          {/* Overlay (click to close) */}
+        <>
+          {/* Overlay */}
           <button
             onClick={() => setOpen(false)}
             aria-label="Close menu"
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            aria-hidden="true"
+            className="fixed inset-0 z-[90] bg-black/60 backdrop-blur-sm md:hidden"
           />
-          {/* Panel */}
+
+          {/* Slide-out Panel */}
           <div
             role="dialog"
             aria-modal="true"
-            className="ml-auto flex h-full w-72 max-w-[85%] flex-col border-l border-white/10 bg-gray-900 p-5 shadow-xl"
+            className="fixed right-0 top-0 z-[110] h-full w-72 max-w-[85%] md:hidden
+                       bg-gray-900 border-l border-white/10 shadow-xl p-5 flex flex-col"
           >
             <div className="mb-4 flex items-center justify-between">
               <span className="text-lg font-semibold text-white">Menu</span>
               <button
                 ref={closeBtnRef}
                 onClick={() => setOpen(false)}
-                className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-white/10
+                           focus:outline-none focus:ring-2 focus:ring-emerald-400"
                 aria-label="Close menu"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" className="stroke-white/90">
@@ -138,7 +146,7 @@ export default function Header() {
               </Link>
             </nav>
           </div>
-        </div>
+        </>
       )}
     </>
   );
