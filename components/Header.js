@@ -1,15 +1,32 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const closeBtnRef = useRef(null);
 
-  // Prevent scroll when mobile menu is open
+  // Prevent background scroll (with cleanup)
   useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
+    const original = document.body.style.overflow;
+    document.body.style.overflow = open ? "hidden" : original || "";
+    return () => {
+      document.body.style.overflow = original;
+    };
+  }, [open]);
+
+  // Focus and ESC key handling
+  useEffect(() => {
+    if (open) {
+      if (closeBtnRef.current) closeBtnRef.current.focus();
+      const onKey = (e) => {
+        if (e.key === "Escape") setOpen(false);
+      };
+      window.addEventListener("keydown", onKey);
+      return () => window.removeEventListener("keydown", onKey);
+    }
   }, [open]);
 
   const links = [
@@ -22,16 +39,16 @@ export default function Header() {
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-gray-900/70 backdrop-blur-md">
-        <div className="container flex items-center justify-between px-4 py-4 sm:px-6 relative">
+        <div className="container relative flex items-center justify-between px-4 py-4 sm:px-6">
           {/* Left — Brand */}
-          <Link href="/" className="no-underline z-20">
-            <span className="text-xl sm:text-2xl font-extrabold text-gray-100 tracking-wide">
+          <Link href="/" className="z-20 no-underline">
+            <span className="text-xl font-extrabold tracking-wide text-gray-100 sm:text-2xl">
               The <span className="text-emerald-400">Clean</span> Code
             </span>
           </Link>
 
           {/* Center — Logo */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 hidden sm:block">
+          <div className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 sm:block z-10">
             <Image
               src="/the-clean-code-logo.png"
               alt="The Clean Code Logo"
@@ -43,19 +60,15 @@ export default function Header() {
           </div>
 
           {/* Right — Desktop Nav */}
-          <nav className="hidden md:flex gap-6 text-sm text-gray-300">
+          <nav className="hidden items-center gap-6 text-sm text-gray-300 md:flex">
             {links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="hover:text-white transition"
-              >
+              <Link key={link.href} href={link.href} className="transition hover:text-white">
                 {link.label}
               </Link>
             ))}
             <Link
               href="/guides"
-              className="bg-emerald-500 hover:bg-emerald-400 text-white font-semibold rounded-xl px-4 py-2 transition"
+              className="rounded-xl bg-emerald-500 px-4 py-2 font-semibold text-white transition hover:bg-emerald-400"
             >
               Start Here
             </Link>
@@ -64,15 +77,12 @@ export default function Header() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setOpen(true)}
-            className="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-lg hover:bg-white/10 z-20"
+            className="z-20 inline-flex h-10 w-10 items-center justify-center rounded-lg hover:bg-white/10 md:hidden"
             aria-label="Open menu"
+            aria-haspopup="dialog"
+            aria-expanded={open}
           >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              className="stroke-white/90"
-            >
+            <svg width="24" height="24" viewBox="0 0 24 24" className="stroke-white/90">
               <path d="M4 6h16M4 12h16M4 18h16" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </button>
@@ -82,40 +92,39 @@ export default function Header() {
       {/* Mobile Drawer */}
       {open && (
         <div className="fixed inset-0 z-50 md:hidden">
+          {/* Overlay (click to close) */}
           <button
             onClick={() => setOpen(false)}
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             aria-label="Close menu"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
           />
-          <div className="ml-auto h-full w-72 max-w-[85%] bg-gray-900 shadow-xl border-l border-white/10 p-5 flex flex-col">
-            <div className="flex items-center justify-between mb-4">
+          {/* Panel */}
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="ml-auto flex h-full w-72 max-w-[85%] flex-col border-l border-white/10 bg-gray-900 p-5 shadow-xl"
+          >
+            <div className="mb-4 flex items-center justify-between">
               <span className="text-lg font-semibold text-white">Menu</span>
               <button
+                ref={closeBtnRef}
                 onClick={() => setOpen(false)}
-                className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-white/10"
+                className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                aria-label="Close menu"
               >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  className="stroke-white/90"
-                >
-                  <path
-                    d="M6 6l12 12M18 6l-12 12"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
+                <svg width="20" height="20" viewBox="0 0 24 24" className="stroke-white/90">
+                  <path d="M6 6l12 12M18 6l-12 12" strokeWidth="2" strokeLinecap="round" />
                 </svg>
               </button>
             </div>
 
-            <nav className="flex flex-col gap-2 text-gray-300">
+            <nav className="flex flex-col gap-2 text-base font-medium text-gray-300">
               {links.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setOpen(false)}
-                  className="rounded-lg px-4 py-3 hover:bg-white/10 transition text-base font-medium"
+                  className="rounded-lg px-4 py-3 transition hover:bg-white/10"
                 >
                   {link.label}
                 </Link>
@@ -123,7 +132,7 @@ export default function Header() {
               <Link
                 href="/guides"
                 onClick={() => setOpen(false)}
-                className="mt-3 block bg-emerald-500 text-white font-semibold text-center rounded-xl px-4 py-3 hover:bg-emerald-400 transition"
+                className="mt-3 block rounded-xl bg-emerald-500 px-4 py-3 text-center font-semibold text-white transition hover:bg-emerald-400"
               >
                 Start Here
               </Link>
