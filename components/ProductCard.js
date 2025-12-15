@@ -9,7 +9,11 @@ export default function ProductCard({ p }) {
     <motion.article
       whileHover={{ y: -4, scale: 1.015 }}
       transition={{ duration: 0.25, ease: "easeOut" }}
-      className="group relative overflow-hidden rounded-2xl bg-gradient-to-b from-zinc-900/70 to-zinc-800/70 p-5 shadow-md ring-1 ring-white/10 hover:ring-emerald-400/40 hover:shadow-emerald-400/10 transition-all"
+      className="group relative overflow-hidden rounded-2xl
+                 bg-gradient-to-b from-zinc-900/70 to-zinc-800/70
+                 p-5 shadow-md ring-1 ring-white/10
+                 hover:ring-emerald-400/40 hover:shadow-emerald-400/10
+                 transition-all"
     >
       {/* Product Image */}
       <div className="relative mb-4 aspect-square w-full overflow-hidden rounded-xl bg-zinc-900">
@@ -18,6 +22,7 @@ export default function ProductCard({ p }) {
             src={p.image}
             alt={p.title}
             fill
+            sizes="(max-width: 640px) 100vw, 300px"
             className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
@@ -34,9 +39,19 @@ export default function ProductCard({ p }) {
             {p.title}
           </h3>
           <p className="text-xs text-white/60 mt-0.5">
-            {p.brand} &middot; <span className="font-medium">{p.price}</span>
+            {p.brand}
+            {p.price && (
+              <>
+                {" "}
+                &middot;{" "}
+                <span className="font-medium">
+                  Typical price: {p.price}
+                </span>
+              </>
+            )}
           </p>
         </div>
+
         {/* Rating */}
         <div className="rounded-lg bg-emerald-500/20 px-2 py-1 text-xs font-semibold text-emerald-300">
           ★ {p.rating ?? "–"}
@@ -88,14 +103,20 @@ export default function ProductCard({ p }) {
         <Link
           href={p.affiliateUrl || "#"}
           target="_blank"
-          className="rounded-xl bg-white text-ink-900 font-semibold px-4 py-2 text-sm shadow-sm hover:bg-emerald-200 hover:shadow-emerald-400/20 transition"
+          rel="nofollow sponsored noopener noreferrer"
+          className="rounded-xl bg-white text-ink-900 font-semibold
+                     px-4 py-2 text-sm shadow-sm
+                     hover:bg-emerald-200 hover:shadow-emerald-400/20
+                     transition"
         >
           View on Amazon
         </Link>
 
         <Link
           href={`/shop/${p.id}`}
-          className="rounded-xl border border-emerald-400/30 px-4 py-2 text-sm text-emerald-300 hover:bg-emerald-400/10 transition"
+          className="rounded-xl border border-emerald-400/30
+                     px-4 py-2 text-sm text-emerald-300
+                     hover:bg-emerald-400/10 transition"
         >
           Details
         </Link>

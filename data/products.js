@@ -4,7 +4,8 @@ export const products = [
     id: "hexclad-12",
     title: '12" Stainless Skillet',
     brand: "HexClad",
-    price: "$169,99",
+    price: "$169.99",
+    priceNote: "Typical Amazon price (may vary)",
     affiliateUrl: "https://amzn.to/4ofkH9A",
     rating: 4.8,
     tccScore: 92,
@@ -23,6 +24,7 @@ export const products = [
     title: '10" Cast Iron Pan',
     brand: "Lodge",
     price: "$24.90",
+    priceNote: "Typical Amazon price (may vary)",
     affiliateUrl: "https://amzn.to/3J2eWgw",
     rating: 4.7,
     tccScore: 97,
@@ -41,6 +43,7 @@ export const products = [
     title: "Glass Storage Set (7pc)",
     brand: "Pyrex",
     price: "$42.99",
+    priceNote: "Typical Amazon price (may vary)",
     affiliateUrl: "https://amzn.to/3IVzB64",
     rating: 4.6,
     tccScore: 94,
@@ -59,6 +62,7 @@ export const products = [
     title: "16oz Amber Glass Spray Bottle",
     brand: "EcoBrand",
     price: "$12.99",
+    priceNote: "Typical Amazon price (may vary)",
     affiliateUrl: "https://amzn.to/4nPfjKJ",
     rating: 4.8,
     tccScore: 96,
@@ -77,6 +81,7 @@ export const products = [
     title: "Pure Castile Magic Liquid Soap",
     brand: "Dr. Bronner’s",
     price: "$16.95",
+    priceNote: "Typical Amazon price (may vary)",
     affiliateUrl: "https://amzn.to/4q7Xc4a",
     rating: 4.9,
     tccScore: 99,
@@ -92,9 +97,10 @@ export const products = [
   },
   {
     id: "palm-pot-brushes",
-    title: "Palm Pot Brushes(3pc)",
+    title: "Palm Pot Brushes (3pc)",
     brand: "Greenth Pro",
     price: "$9.99",
+    priceNote: "Typical Amazon price (may vary)",
     affiliateUrl: "https://amzn.to/48rcomH",
     rating: 4.7,
     tccScore: 93,
@@ -113,6 +119,7 @@ export const products = [
     title: "Reusable Swedish Dishcloths (5-Pack)",
     brand: "FEBU",
     price: "$19.99",
+    priceNote: "Typical Amazon price (may vary)",
     affiliateUrl: "https://amzn.to/475Qser",
     rating: 4.7,
     tccScore: 95,
@@ -120,7 +127,7 @@ export const products = [
     cons: ["Can stain with heavy grease"],
     category: "kitchen",
     summary:
-      "Eco-friendly Swedish dishcloths that replace up to 15 rolls of paper towels — reusable, washable, and biodegradable.",
+      "Eco-friendly Swedish dishcloths that replace paper towels — reusable, washable, and biodegradable.",
     image: "https://m.media-amazon.com/images/I/81RbS1LFuVL._AC_SX679_.jpg",
     relatedBlogs: ["eco-cleaning-tools", "reduce-paper-waste"],
     sustainability: "Fully compostable cellulose-cotton blend.",
@@ -131,6 +138,7 @@ export const products = [
     title: "Wool Dryer Balls (6-Pack)",
     brand: "Smart Sheep",
     price: "$19.95",
+    priceNote: "Typical Amazon price (may vary)",
     affiliateUrl: "https://amzn.to/4n5OTmO",
     rating: 4.8,
     tccScore: 97,
@@ -138,7 +146,7 @@ export const products = [
     cons: ["May collect lint over time"],
     category: "laundry",
     summary:
-      "All-natural wool dryer balls replace single-use dryer sheets — reduce static and drying time while softening clothes safely.",
+      "All-natural wool dryer balls replace dryer sheets — reduce static and drying time safely.",
     image: "https://m.media-amazon.com/images/I/71Vp0eBeD-L._AC_SX679_.jpg",
     relatedBlogs: ["hidden-laundry-toxins", "eco-laundry-hacks"],
     sustainability: "Zero-waste and reusable for years.",
@@ -149,6 +157,7 @@ export const products = [
     title: "Beeswax Food Wraps (3-Pack)",
     brand: "Bee’s Wrap",
     price: "$17.99",
+    priceNote: "Typical Amazon price (may vary)",
     affiliateUrl: "https://amzn.to/4nKWqs6",
     rating: 4.6,
     tccScore: 94,
@@ -156,7 +165,7 @@ export const products = [
     cons: ["Not for raw meat storage"],
     category: "kitchen",
     summary:
-      "Reusable beeswax wraps that replace plastic wrap — moldable, breathable, and perfect for sandwiches, produce, and leftovers.",
+      "Reusable beeswax wraps that replace plastic wrap — moldable, breathable, and compostable.",
     image: "https://m.media-amazon.com/images/I/71k1q49GlxL._AC_SX679_.jpg",
     relatedBlogs: ["plastic-free-kitchen", "eco-food-storage"],
     sustainability: "Reusable and compostable after long-term use.",
@@ -167,6 +176,7 @@ export const products = [
     title: "Bamboo Toothbrush Set (10-Pack)",
     brand: "VIVAGO",
     price: "$10.99",
+    priceNote: "Typical Amazon price (may vary)",
     affiliateUrl: "https://amzn.to/3KQRxPI",
     rating: 4.7,
     tccScore: 98,
@@ -174,10 +184,10 @@ export const products = [
     cons: ["Bristles not compostable"],
     category: "bathroom",
     summary:
-      "Zero-waste bamboo toothbrushes with compostable handles and soft bristles — sustainable oral care without plastic.",
+      "Zero-waste bamboo toothbrushes with compostable handles — sustainable oral care without plastic.",
     image: "https://m.media-amazon.com/images/I/81eEsIolGQL._AC_SX679_.jpg",
     relatedBlogs: ["zero-waste-bathroom", "eco-dental-care"],
-    sustainability: "100% biodegradable handle, recyclable packaging.",
+    sustainability: "Biodegradable handle, recyclable packaging.",
     transparency: "Full material disclosure on packaging.",
   },
   {
@@ -185,6 +195,7 @@ export const products = [
     title: "Glass Spice Jars with Labels (24-Pack)",
     brand: "Aozita",
     price: "$28.99",
+    priceNote: "Typical Amazon price (may vary)",
     affiliateUrl: "https://amzn.to/47hIJLz",
     rating: 4.8,
     tccScore: 93,
@@ -192,39 +203,38 @@ export const products = [
     cons: ["Glass can chip if dropped"],
     category: "kitchen",
     summary:
-      "Organize your pantry with reusable glass spice jars — plastic-free and stylish with customizable labels.",
+      "Reusable glass spice jars — plastic-free pantry organization with labels and funnel included.",
     image: "https://m.media-amazon.com/images/I/81nZpU5wz4L._AC_SX679_.jpg",
     relatedBlogs: ["eco-kitchen-storage", "organize-pantry"],
-    sustainability: "Reusable glass and metal lids, no plastic.",
+    sustainability: "Reusable glass and metal lids.",
     transparency: "Clearly labeled, easy to refill and clean.",
   },
   {
-  id: "lecdura-glass-diffuser",
-  title: "Lecdura Glass Essential Oil Diffuser (80 mL)",
-  brand: "Lecdura",
-  price: "$39.99",   // adjust based on live listing
-  affiliateUrl: "https://amzn.to/3J84nIT",
-  rating: 4.2,        // estimate / you can leave or change after you see reviews
-  tccScore: 95,        // arbitrarily high if you believe it meets your standards
-  pros: [
-    "Glass reservoir and cover preserve purity",
-    "Natural wood base aesthetic",
-    "Auto-off waterless protection",
-    "USB-powered for flexible placement"
-  ],
-  cons: [
-    "Includes LED lighting (not purely minimal)",
-    "Water-based mist (not true nebulizer)",
-    "Return rate is higher than ideal (check user reviews)"
-  ],
-  category: "home",
-  summary:
-    "80 mL glass and wood ultrasonic essential oil diffuser combining minimalist style with functionality and auto-off safety.",
-  image: "https://m.media-amazon.com/images/I/81uvUfrlt6L._AC_SX679_.jpg",  // you'll want the actual image URL
-  relatedBlogs: ["clean-air-home", "essential-oils-guide"],
-  sustainability: "No plastic reservoir and easy to clean — fewer replacements.",
-  transparency: "Full material disclosure: glass, wood, standard electronics."
-}
-
-
+    id: "lecdura-glass-diffuser",
+    title: "Lecdura Glass Essential Oil Diffuser (80 mL)",
+    brand: "Lecdura",
+    price: "$39.99",
+    priceNote: "Typical Amazon price (may vary)",
+    affiliateUrl: "https://amzn.to/3J84nIT",
+    rating: 4.2,
+    tccScore: 95,
+    pros: [
+      "Glass reservoir and cover preserve purity",
+      "Natural wood base aesthetic",
+      "Auto-off safety protection",
+      "USB-powered for flexible placement",
+    ],
+    cons: [
+      "Includes LED lighting",
+      "Water-based mist (not a true nebulizer)",
+      "Mixed long-term durability reviews",
+    ],
+    category: "home",
+    summary:
+      "Glass and wood ultrasonic diffuser combining minimalist design with auto-off safety.",
+    image: "https://m.media-amazon.com/images/I/81uvUfrlt6L._AC_SX679_.jpg",
+    relatedBlogs: ["clean-air-home", "essential-oils-guide"],
+    sustainability: "Glass construction reduces plastic exposure.",
+    transparency: "Full material disclosure: glass, wood, electronics.",
+  },
 ];
