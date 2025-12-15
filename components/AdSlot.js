@@ -2,18 +2,13 @@
 
 import { useEffect } from "react";
 
-/**
- * Google AdSense component
- * Replace `data-ad-client` with your own publisher ID once approved.
- */
 export default function AdSlot({
-  slot = "1234567890", // Replace with your real Ad Slot ID later
+  slot = "1234567890",
   format = "auto",
   style = {},
 }) {
   useEffect(() => {
     try {
-      // Only push once per ad instance
       (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch (err) {
       console.warn("AdSense load error:", err);
@@ -30,7 +25,7 @@ export default function AdSlot({
           minHeight: 90,
           ...style,
         }}
-        data-ad-client="ca-pub-XXXXXXXXXXXXXXX" // replace with your ID after approval
+        data-ad-client="ca-pub-4743638908421899"
         data-ad-slot={slot}
         data-ad-format={format}
         data-full-width-responsive="true"

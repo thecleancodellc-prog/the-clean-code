@@ -20,11 +20,13 @@ export default function Header() {
   // Focus close button & ESC to close
   useEffect(() => {
     if (!open) return;
+
     if (closeBtnRef.current) closeBtnRef.current.focus();
 
     const onKey = (e) => {
       if (e.key === "Escape") setOpen(false);
     };
+
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
@@ -86,8 +88,17 @@ export default function Header() {
             aria-haspopup="dialog"
             aria-expanded={open}
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" className="stroke-white/90">
-              <path d="M4 6h16M4 12h16M4 18h16" strokeWidth="2" strokeLinecap="round" />
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              className="stroke-white/90"
+            >
+              <path
+                d="M4 6h16M4 12h16M4 18h16"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
             </svg>
           </button>
         </div>
@@ -96,10 +107,9 @@ export default function Header() {
       {/* Mobile Drawer */}
       {open && (
         <>
-          {/* Overlay */}
-          <button
+          {/* Overlay — DIV (not button) */}
+          <div
             onClick={() => setOpen(false)}
-            aria-label="Close menu"
             aria-hidden="true"
             className="fixed inset-0 z-[90] bg-black/60 backdrop-blur-sm md:hidden"
           />
@@ -109,7 +119,8 @@ export default function Header() {
             role="dialog"
             aria-modal="true"
             className="fixed right-0 top-0 z-[110] h-full w-72 max-w-[85%] md:hidden
-                       bg-gray-900 border-l border-white/10 shadow-xl p-5 flex flex-col"
+                       bg-gray-900 border-l border-white/10 shadow-xl p-5
+                       flex flex-col pointer-events-auto"
           >
             <div className="mb-4 flex items-center justify-between">
               <span className="text-lg font-semibold text-white">Menu</span>
@@ -120,8 +131,17 @@ export default function Header() {
                            focus:outline-none focus:ring-2 focus:ring-emerald-400"
                 aria-label="Close menu"
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" className="stroke-white/90">
-                  <path d="M6 6l12 12M18 6l-12 12" strokeWidth="2" strokeLinecap="round" />
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  className="stroke-white/90"
+                >
+                  <path
+                    d="M6 6l12 12M18 6l-12 12"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
                 </svg>
               </button>
             </div>
@@ -140,7 +160,8 @@ export default function Header() {
               <Link
                 href="/guides"
                 onClick={() => setOpen(false)}
-                className="mt-3 block rounded-xl bg-emerald-500 px-4 py-3 text-center font-semibold text-white transition hover:bg-emerald-400"
+                className="mt-3 block rounded-xl bg-emerald-500 px-4 py-3
+                           text-center font-semibold text-white transition hover:bg-emerald-400"
               >
                 Start Here
               </Link>
