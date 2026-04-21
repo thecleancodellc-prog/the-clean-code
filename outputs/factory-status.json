@@ -1,0 +1,176 @@
+{
+  "isRunning": false,
+  "currentAgent": null,
+  "lastUpdate": "2026-04-20T22:49:04.862Z",
+  "lastRunDate": "2026-04-20T22:48:01.882Z",
+  "agents": {
+    "Scout": {
+      "status": "complete",
+      "lastMessage": "Topic: \"Sustainable Home Office Setup: Products and Practices\"",
+      "updatedAt": "2026-04-20T22:48:18.142Z"
+    },
+    "Amazon": {
+      "status": "complete",
+      "lastMessage": "Product: Fellowes Bamboo Office Desk Organizer",
+      "updatedAt": "2026-04-20T22:48:20.838Z"
+    },
+    "Scribe": {
+      "status": "complete",
+      "lastMessage": "Post: \"Sustainable Home Office Setup: Products and Practices\"",
+      "updatedAt": "2026-04-20T22:48:31.493Z"
+    },
+    "Image": {
+      "status": "complete",
+      "lastMessage": "Saved: public/images/sustainable-home-office-setup.jpg",
+      "updatedAt": "2026-04-20T22:48:50.932Z"
+    },
+    "Publisher": {
+      "status": "complete",
+      "lastMessage": "Published: /sustainable-home-office-setup",
+      "updatedAt": "2026-04-20T22:48:50.938Z"
+    },
+    "Spark": {
+      "status": "complete",
+      "lastMessage": "Saved: outputs/social/sustainable-home-office-setup-social.txt",
+      "updatedAt": "2026-04-20T22:48:57.752Z"
+    },
+    "Reel": {
+      "status": "complete",
+      "lastMessage": "Saved: outputs/reels/sustainable-home-office-setup-reel.txt",
+      "updatedAt": "2026-04-20T22:49:01.573Z"
+    },
+    "Mailer": {
+      "status": "complete",
+      "lastMessage": "Saved: outputs/emails/sustainable-home-office-setup-email.txt",
+      "updatedAt": "2026-04-20T22:49:04.859Z"
+    }
+  },
+  "stats": {
+    "totalPostsPublished": 12,
+    "totalSocialCaptions": 2,
+    "lastPostTitle": "Sustainable Home Office Setup: Products and Practices",
+    "lastPostSlug": "sustainable-home-office-setup"
+  },
+  "activityFeed": [
+    {
+      "message": "Factory run complete",
+      "time": "2026-04-20T22:49:04.862Z"
+    },
+    {
+      "message": "[Mailer] ✓ Saved: outputs/emails/sustainable-home-office-setup-email.txt",
+      "time": "2026-04-20T22:49:04.859Z"
+    },
+    {
+      "message": "[Mailer] Draft & send newsletter",
+      "time": "2026-04-20T22:49:01.573Z"
+    },
+    {
+      "message": "[Reel] ✓ Saved: outputs/reels/sustainable-home-office-setup-reel.txt",
+      "time": "2026-04-20T22:49:01.573Z"
+    },
+    {
+      "message": "[Reel] Write short-form video script",
+      "time": "2026-04-20T22:48:57.753Z"
+    },
+    {
+      "message": "[Spark] ✓ Saved: outputs/social/sustainable-home-office-setup-social.txt",
+      "time": "2026-04-20T22:48:57.752Z"
+    },
+    {
+      "message": "[Spark] Write social captions",
+      "time": "2026-04-20T22:48:50.939Z"
+    },
+    {
+      "message": "[Publisher] ✓ Published: /sustainable-home-office-setup",
+      "time": "2026-04-20T22:48:50.938Z"
+    },
+    {
+      "message": "[Publisher] Append post to data/posts.js",
+      "time": "2026-04-20T22:48:50.933Z"
+    },
+    {
+      "message": "[Image] ✓ Saved: public/images/sustainable-home-office-setup.jpg",
+      "time": "2026-04-20T22:48:50.932Z"
+    },
+    {
+      "message": "[Image] Generate cover image (DALL-E)",
+      "time": "2026-04-20T22:48:31.495Z"
+    },
+    {
+      "message": "[Scribe] ✓ Post: \"Sustainable Home Office Setup: Products and Practices\"",
+      "time": "2026-04-20T22:48:31.493Z"
+    },
+    {
+      "message": "[Scribe] Write full post",
+      "time": "2026-04-20T22:48:20.839Z"
+    },
+    {
+      "message": "[Amazon] ✓ Product: Fellowes Bamboo Office Desk Organizer",
+      "time": "2026-04-20T22:48:20.838Z"
+    },
+    {
+      "message": "[Amazon] Find affiliate product",
+      "time": "2026-04-20T22:48:18.144Z"
+    },
+    {
+      "message": "[Scout] ✓ Topic: \"Sustainable Home Office Setup: Products and Practices\"",
+      "time": "2026-04-20T22:48:18.142Z"
+    },
+    {
+      "message": "[Scout] Research & pick topic",
+      "time": "2026-04-20T22:48:01.884Z"
+    },
+    {
+      "message": "Factory run started",
+      "time": "2026-04-20T22:48:01.882Z"
+    },
+    {
+      "message": "Factory run complete",
+      "time": "2026-04-20T01:28:18.482Z"
+    },
+    {
+      "message": "[Mailer] ✓ Saved: outputs/emails/non-toxic-pest-control-email.txt",
+      "time": "2026-04-20T01:28:18.480Z"
+    },
+    {
+      "message": "[Mailer] Draft & send newsletter",
+      "time": "2026-04-20T01:28:14.816Z"
+    },
+    {
+      "message": "[Reel] ✓ Saved: outputs/reels/non-toxic-pest-control-reel.txt",
+      "time": "2026-04-20T01:28:14.815Z"
+    },
+    {
+      "message": "[Reel] Write short-form video script",
+      "time": "2026-04-20T01:28:09.899Z"
+    },
+    {
+      "message": "[Spark] ✓ Saved: outputs/social/non-toxic-pest-control-social.txt",
+      "time": "2026-04-20T01:28:09.899Z"
+    },
+    {
+      "message": "[Spark] Write social captions",
+      "time": "2026-04-20T01:28:02.013Z"
+    },
+    {
+      "message": "[Publisher] ✓ Published: /non-toxic-pest-control",
+      "time": "2026-04-20T01:28:02.012Z"
+    },
+    {
+      "message": "[Publisher] Append post to data/posts.js",
+      "time": "2026-04-20T01:28:02.008Z"
+    },
+    {
+      "message": "[Image] ✓ Saved: public/images/non-toxic-pest-control.jpg",
+      "time": "2026-04-20T01:28:02.007Z"
+    },
+    {
+      "message": "[Image] Generate cover image (DALL-E)",
+      "time": "2026-04-20T01:27:47.029Z"
+    },
+    {
+      "message": "[Scribe] ✓ Post: \"Non-Toxic Pest Control: Eco-Friendly Solutions for Every Home\"",
+      "time": "2026-04-20T01:27:47.028Z"
+    }
+  ]
+}

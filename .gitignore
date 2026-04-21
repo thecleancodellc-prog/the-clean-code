@@ -5,6 +5,11 @@
 /.next
 /out
 
+# factory outputs
+/outputs/*
+!/outputs/.gitkeep
+!/outputs/factory-status.json
+
 # misc
 .DS_Store
 .env.local

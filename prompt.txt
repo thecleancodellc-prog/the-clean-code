@@ -1,0 +1,20 @@
+Add a real-time status system to the factory pipeline:
+
+1. Create a file called outputs/factory-status.json that gets updated by factory.mjs as each agent runs. It should track:
+- Which agent is currently running
+- Status of each agent (idle, running, complete, error)
+- Last action message for each agent
+- Timestamp of last update
+- Total posts published
+- Total social captions generated
+- Last post title and slug published
+
+2. Update factory.mjs to write to factory-status.json before and after each agent runs so the status is always current
+
+3. Create a file called scripts/dashboard-server.mjs — a simple Express server that:
+- Serves the two HTML dashboard files we already have (the green control panel and the RPG world)
+- Exposes a GET /api/status endpoint that reads and returns factory-status.json
+- Exposes a GET /api/posts endpoint that returns the count and titles from data/posts.js
+- Runs on port 4000
+
+4. Update the dashboard HTML files to fetch from /api/status every 5 seconds and update all the live elements — agent statuses, activity feed, visitor counts, post counts automatically

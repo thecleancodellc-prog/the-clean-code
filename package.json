@@ -6,12 +6,20 @@
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "generate-post": "node --env-file=.env.local scripts/generate-post.mjs",
+    "factory": "node --env-file=.env.local scripts/factory.mjs",
+    "factory:schedule": "node --env-file=.env.local scripts/factory.mjs --schedule",
+    "analyst": "node --env-file=.env.local scripts/agents/analyst.mjs",
+    "dashboard": "node --env-file=.env.local scripts/dashboard-server.mjs"
   },
   "dependencies": {
     "clsx": "2.1.1",
+    "express": "^5.2.1",
     "framer-motion": "^12.23.22",
     "next": "14.2.3",
+    "node-cron": "^4.2.1",
+    "openai": "^6.34.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "styled-components": "6.1.19"
