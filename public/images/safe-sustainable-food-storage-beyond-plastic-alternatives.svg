@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1792" height="1024" viewBox="0 0 1792 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ecfff3"/>
+      <stop offset="0.52" stop-color="#b9f5cf"/>
+      <stop offset="1" stop-color="#ffffff"/>
+    </linearGradient>
+    <filter id="soft"><feGaussianBlur stdDeviation="22"/></filter>
+  </defs>
+  <rect width="1792" height="1024" fill="url(#bg)"/>
+  <circle cx="320" cy="260" r="180" fill="#78d99c" opacity=".30" filter="url(#soft)"/>
+  <circle cx="1480" cy="760" r="240" fill="#4fbf7a" opacity=".20" filter="url(#soft)"/>
+  <rect x="150" y="150" width="1492" height="724" rx="54" fill="rgba(255,255,255,.62)" stroke="#4fbf7a" stroke-width="6"/>
+  <text x="210" y="292" font-family="Arial, Helvetica, sans-serif" font-size="46" font-weight="700" fill="#1f5f3a">The Clean Code</text>
+  <foreignObject x="210" y="360" width="1370" height="360">
+    <div xmlns="http://www.w3.org/1999/xhtml" style="font-family:Arial,Helvetica,sans-serif;font-size:78px;font-weight:800;line-height:1.08;color:#133b29;">
+      Safe and Sustainable Food Storage: Beyond Plastic Alternatives
+    </div>
+  </foreignObject>
+  <text x="210" y="790" font-family="Arial, Helvetica, sans-serif" font-size="32" fill="#397451">Clean living, non-toxic home, better everyday systems</text>
+</svg>
