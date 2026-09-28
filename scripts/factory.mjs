@@ -54,6 +54,7 @@ import {
 import { run as scout }     from "./agents/scout.mjs";
 import { run as amazon }    from "./agents/amazon.mjs";
 import { run as scribe }    from "./agents/scribe.mjs";
+import { run as factCheck } from "./agents/fact-checker.mjs";
 import { run as image }     from "./agents/image.mjs";
 import { run as publisher } from "./agents/publisher.mjs";
 import { run as spark }     from "./agents/spark.mjs";
@@ -84,6 +85,7 @@ const PIPELINE = [
   { name: "Scout",     fn: scout,     desc: "Research & pick topic"         },
   { name: "Amazon",    fn: amazon,    desc: "Find affiliate product"         },
   { name: "Scribe",    fn: scribe,    desc: "Write full post"                },
+  { name: "Fact Checker", fn: factCheck, desc: "Verify claims with cited web research" },
   { name: "Image",     fn: image,     desc: "Generate cover image (DALL-E)"  },
   { name: "Publisher", fn: publisher, desc: "Append post to data/posts.js"   },
   { name: "Spark",     fn: spark,     desc: "Write social captions"          },
@@ -145,7 +147,7 @@ export async function runFactory() {
       // Track cross-run failure count — notify at 3
       if (notifier) notifier.checkAndNotifyAgentFailure(name, err.message).catch(() => {});
 
-      const fatalAfter = ["Scout", "Scribe"];
+      const fatalAfter = ["Scout", "Scribe", "Fact Checker"];
       if (fatalAfter.includes(name)) {
         warn("Factory", `${name} is required — skipping remaining agents.`);
         const remaining = PIPELINE.slice(PIPELINE.findIndex((p) => p.name === name) + 1);

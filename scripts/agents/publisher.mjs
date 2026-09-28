@@ -6,6 +6,7 @@ import { execSync } from "child_process";
 import { pathToFileURL } from "url";
 import { readContext, writeContext, ROOT } from "../lib/context.mjs";
 import { step, info, warn } from "../lib/log.mjs";
+import { assertPostQuality } from "../lib/content-quality.mjs";
 
 const AGENT = "Publisher";
 const POSTS_FILE = path.join(ROOT, "data/posts.js");
@@ -127,6 +128,11 @@ export async function run() {
 
   const post = ctx.postData;
   step(AGENT, `Publishing: "${post.title}" → data/posts.js`);
+
+  if (ctx.factCheck?.approved !== true) {
+    throw new Error("Publisher requires an approved Fact Checker report for this draft.");
+  }
+  assertPostQuality(post);
 
   let source = fs.readFileSync(POSTS_FILE, "utf8");
   const lastBracket = source.lastIndexOf("];");

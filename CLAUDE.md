@@ -30,7 +30,7 @@ npm run lint     # ESLint via Next.js
 
 ### Routing patterns
 
-- Blog posts: `app/(site)/blog/[slug]/page.js` — slug matches `id` field in `data/posts.js`
+- Blog posts: `app/(site)/blog/[slug]/page.js` — slug matches the `slug` field in `data/posts.js`
 - Products: `app/(site)/shop/[id]/page.js` — id matches `id` field in `data/products.js`
 - Guides: `app/guides/[category]/page.js`
 - Dynamic metadata is generated via `generateMetadata()` in each route file
@@ -59,5 +59,6 @@ npm run lint     # ESLint via Next.js
 ```
 NEXT_PUBLIC_SANITY_PROJECT_ID=h7qre274
 NEXT_PUBLIC_SANITY_DATASET=production
+FACT_CHECK_MODEL=gpt-4.1-mini # optional; web fact checker default
 ```
 Sanity is configured but not actively wired to content — posts/products are static data files.

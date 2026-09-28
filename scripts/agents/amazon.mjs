@@ -1,9 +1,8 @@
 // Amazon — finds and scrapes a real affiliate product for the current topic
 // Uses Playwright with 3 self-healing fallback strategies.
-// Falls back to OpenAI suggestion if all scraping attempts fail.
+// Continues without a product if all verified scraping attempts fail.
 // Usage: node --env-file=.env.local scripts/agents/amazon.mjs
 
-import OpenAI from "openai";
 import { readContext, writeContext } from "../lib/context.mjs";
 import { step, info, warn } from "../lib/log.mjs";
 
@@ -199,34 +198,6 @@ async function scrapeAmazon(query) {
   }
 }
 
-// ─── OpenAI fallback ───────────────────────────────────────────────────────────
-
-async function suggestViaAI(topic) {
-  const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-  const response = await client.chat.completions.create({
-    model: "gpt-4o",
-    messages: [
-      {
-        role: "system",
-        content: `You are a product researcher for "The Clean Code" — an eco-friendly, non-toxic home living blog that earns via Amazon affiliate links.`,
-      },
-      {
-        role: "user",
-        content: `Suggest the single best real Amazon product for: "${topic}"
-Requirements: non-toxic/eco-friendly, $10–$60, well-reviewed.
-Respond with JSON only:
-{"title":"...","brand":"...","image":"/images/products/[slug].jpg","affiliateUrl":"https://www.amazon.com/dp/[ASIN]?tag=${AMAZON_TAG}","description":"1–2 sentences.","price":"$XX.XX","asin":"XXXXXXXXXX"}`,
-      },
-    ],
-    response_format: { type: "json_object" },
-  });
-  const product = JSON.parse(response.choices[0].message.content);
-  // Enforce correct tag regardless of what the model returned
-  if (product.affiliateUrl) product.affiliateUrl = tagUrl(product.affiliateUrl);
-  if (!isValidProduct(product)) throw new Error("AI fallback returned an invalid Amazon product.");
-  return product;
-}
-
 // ─── Main ──────────────────────────────────────────────────────────────────────
 
 export async function run() {
@@ -258,11 +229,12 @@ export async function run() {
     warn(AGENT, `Playwright scraping error: ${err.message}`);
   }
 
-  // Fall back to OpenAI suggestion
+  // Never let a language model invent an ASIN. A post can proceed without a
+  // spotlight, but it cannot monetize through an unverified product.
   if (!product) {
-    warn(AGENT, "All scraping strategies failed — falling back to AI suggestion.");
-    product = await suggestViaAI(ctx.topic);
-    product.source = 'ai-suggested';
+    warn(AGENT, "All scraping strategies failed — continuing without a product spotlight.");
+    const updated = writeContext({ product: null, productWarning: "No verified Amazon product was found." });
+    return updated;
   }
 
   info(AGENT, `Product: ${product.title} (${product.price}) [via ${product.source}]`);

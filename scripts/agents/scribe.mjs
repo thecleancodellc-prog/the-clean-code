@@ -59,8 +59,13 @@ Slug (already determined): "${ctx.slug}"
 Research notes to draw from:
 ${ctx.researchNotes}
 
-Product spotlight (reference it naturally in the content with a link to /shop/${ctx.slug} if relevant):
+Product spotlight (informational context only; do not link to it inside the article because it renders separately):
 ${ctx.product ? `${ctx.product.title} — ${ctx.product.description}` : "None"}
+
+Do not invent internal URLs. If you include an internal shop link, it must use one of these exact product IDs:
+hexclad-12, castiron-10, glass-storage, glass-spray-bottle, castile-soap, palm-pot-brushes, swedish-dishcloths, wool-dryer-balls, beeswax-wraps, bamboo-toothbrush, glass-spice-jars, lecdura-glass-diffuser.
+
+Avoid medical, veterinary, child-safety, chemical-safety, food-safety, fire-safety, or environmental-certification claims unless the research notes contain a credible source supporting the exact claim. Never describe essential oils as categorically pet-safe and never recommend vinegar as an aquarium dechlorinator.
 
 Return only valid JSON — no markdown, no code fences.`,
       },
