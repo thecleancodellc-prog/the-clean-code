@@ -14,6 +14,14 @@ import { fileURLToPath, pathToFileURL } from "url";
 import { SYSTEM_PROMPT } from "./agents/scribe.mjs";
 import { expandToLength } from "./lib/expand.mjs";
 
+function templateEnd(source, from) {
+  for (let i = from; i < source.length; i++) {
+    if (source[i] === "\\") { i++; continue; }
+    if (source[i] === "`") return i;
+  }
+  return -1;
+}
+
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const POSTS_FILE = path.join(ROOT, "data/posts.js");
 const REDIRECTS_FILE = path.join(ROOT, "data/redirects.json");
@@ -86,7 +94,7 @@ function blockRange(source, slug) {
   if (slugAt === -1) throw new Error(`slug not found: ${slug}`);
   const start = source.lastIndexOf("{", slugAt);
   const contentAt = source.indexOf("content: `", slugAt);
-  const contentEnd = source.indexOf("`,", contentAt + 10);
+  const contentEnd = templateEnd(source, contentAt + 10); // real closing backtick, not the next "`,"
   const close = source.indexOf("}", contentEnd);
   let end = close + 1;
   if (source[end] === ",") end++;
@@ -103,7 +111,7 @@ function replaceFields(block, merged) {
     .replace(/^(\s*)title: "(?:[^"\\]|\\.)*",/m, `$1title: ${esc(merged.title)},`)
     .replace(/excerpt:\s*\n?\s*"(?:[^"\\]|\\.)*",/, `excerpt:\n    ${esc(merged.excerpt)},`)
     .replace(/seo: \{[\s\S]*?\n\s*\},/, `seo: {\n    keywords: [${(seo.keywords || []).map(esc).join(", ")}],\n    metaTitle: ${esc(seo.metaTitle)},\n    metaDescription:\n      ${esc(seo.metaDescription)},\n  },`)
-    .replace(/content: `[\s\S]*?\n?\s*`,/, `content: \`\n${escTemplate(merged.content)}\n  \`,`);
+    .replace(/content: `(?:\\[\s\S]|[^`\\])*`/, () => `content: \`\n${escTemplate(merged.content)}\n  \``);
 }
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });

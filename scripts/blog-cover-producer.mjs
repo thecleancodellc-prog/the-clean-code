@@ -15,11 +15,26 @@ import os from "os";
 import { randomUUID } from "crypto";
 import { fileURLToPath, pathToFileURL } from "url";
 import { assertCheckpoint, SAFE_CHECKPOINT, checkImage, screenAndSave } from "./image-safety.mjs";
+import { convertToJpeg } from "./optimize-covers.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const POSTS_FILE = path.join(ROOT, "data/posts.js");
 const REVIEW_DIR = path.join(ROOT, "outputs/blog-covers");
-const SLIDE_MAX_BYTES = 200_000; // generated title-card JPGs are ~110 KB; real photo covers are 1–3 MB
+// Title cards (2026-07-14 repair) are flat-colour 1792x1024 JPEGs at ~0.06 bytes/pixel. Low bytes/pixel alone
+// is not enough: a clean white-background studio photo can be ~0.08. Real covers are now all <= 1200px wide.
+const TITLE_CARD_MAX_BPP = 0.09;
+
+function jpegDims(file) {
+  const buf = fs.readFileSync(file);
+  for (let i = 2; i < buf.length - 9; ) {
+    if (buf[i] !== 0xff) { i++; continue; }
+    const marker = buf[i + 1];
+    if (marker >= 0xc0 && marker <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(marker))
+      return { height: buf.readUInt16BE(i + 5), width: buf.readUInt16BE(i + 7) };
+    i += 2 + buf.readUInt16BE(i + 2);
+  }
+  return null;
+}
 
 function parseArgs() {
   const args = process.argv.slice(2);
@@ -51,14 +66,23 @@ function coverKind(post) {
   if (cover.endsWith(".svg")) return "svg-fallback";
   const file = path.join(ROOT, "public", cover);
   if (!fs.existsSync(file)) return "missing";
-  if (/\.jpe?g$/i.test(cover) && fs.statSync(file).size < SLIDE_MAX_BYTES) return "title-card";
+  // Many older ".jpg" covers are really PNG bytes (DALL-E downloads); those are photos, never title cards.
+  const magic = fs.readFileSync(file).subarray(0, 2);
+  if (/\.jpe?g$/i.test(cover) && magic[0] === 0xff && magic[1] === 0xd8) {
+    const dims = jpegDims(file);
+    if (dims?.width === 1792 && dims.height === 1024 && fs.statSync(file).size / (dims.width * dims.height) < TITLE_CARD_MAX_BPP)
+      return "title-card";
+  }
   return "photo";
 }
 
 function topicScene(post) {
   const t = `${post.slug} ${post.title}`.toLowerCase();
+  // SD 1.5 drifts to a generic living room unless the concrete subject comes first, so lead with the objects.
   const scenes = [
-    [/gym|fitness|workout|exercise/, "bright home gym corner, cork yoga mat, natural rubber dumbbells, wooden plyo box, jute rug, large window, potted plants"],
+    [/\bcar\b|vehicle/, "clean car interior seen from the back seat, tan leather seats, dashboard and steering wheel, spotless floor mats, soft daylight through the windshield"],
+    [/workshop|garage|tools/, "wooden workbench covered with hand tools, pegboard wall with hanging tools, wood shavings, glass jars of screws, garage workshop, daylight"],
+    [/gym|fitness|workout|exercise/, "dumbbells and kettlebells on a wooden rack, exercise bike, cork yoga mat on black rubber floor tiles, home gym room with a large window"],
     [/laundry|detergent|fabric|wardrobe|clothing/, "folded organic cotton towels, wool dryer balls, plain unlabeled glass laundry jar, wooden scoop, woven basket, beautiful laundry room"],
     [/bedding|sleep|mattress|bedroom|allergy/, "organic cotton and linen bedding, neutral pillows, bedside plant, calm bedroom"],
     [/nursery|baby|toy|children|kids|playroom/, "calm nursery with wooden crib, organic cotton blankets, natural wooden toys, soft neutral rug"],
@@ -155,8 +179,9 @@ async function generate(post) {
 }
 
 async function applyCover(post, reviewFile) {
-  const publicRel = `/images/${post.slug}.png`;
-  fs.copyFileSync(reviewFile, path.join(ROOT, "public", publicRel));
+  // Publish a web-sized JPEG (~200 KB), not the ~2 MB review PNG.
+  const publicRel = `/images/${post.slug}.jpg`;
+  convertToJpeg(reviewFile, path.join(ROOT, "public", publicRel));
   const source = fs.readFileSync(POSTS_FILE, "utf8");
   const slugAt = source.indexOf(`slug: "${post.slug}"`);
   if (slugAt === -1) throw new Error(`Could not find ${post.slug} in posts.js`);

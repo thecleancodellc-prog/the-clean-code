@@ -51,7 +51,7 @@ function writeFallbackCover(slug, title) {
   return { cover: `/images/${slug}.svg`, coverImagePath: `public/images/${slug}.svg` };
 }
 
-async function saveGeneratedImage(imageResponse, slug) {
+async function saveGeneratedImage(imageResponse, slug, b64Ext = "png") {
   const imgDir = path.join(ROOT, "public/images");
   const outDir = path.join(ROOT, "outputs/images");
   fs.mkdirSync(imgDir, { recursive: true });
@@ -60,10 +60,10 @@ async function saveGeneratedImage(imageResponse, slug) {
   const image = imageResponse.data?.[0] || {};
 
   if (image.b64_json) {
-    const destPath = path.join(imgDir, `${slug}.png`);
+    const destPath = path.join(imgDir, `${slug}.${b64Ext}`);
     fs.writeFileSync(destPath, Buffer.from(image.b64_json, "base64"));
-    fs.copyFileSync(destPath, path.join(outDir, `${slug}.png`));
-    return { cover: `/images/${slug}.png`, coverImagePath: `public/images/${slug}.png` };
+    fs.copyFileSync(destPath, path.join(outDir, `${slug}.${b64Ext}`));
+    return { cover: `/images/${slug}.${b64Ext}`, coverImagePath: `public/images/${slug}.${b64Ext}` };
   }
 
   if (image.url) {
@@ -99,8 +99,10 @@ Shot on a neutral background with natural props relevant to the topic.`;
     const size = process.env.OPENAI_IMAGE_SIZE || (isDalle3 ? "1792x1024" : "1536x1024");
     const quality = process.env.OPENAI_IMAGE_QUALITY || (isDalle3 ? "standard" : "medium");
 
-    const imageResponse = await client.images.generate({ model, prompt, n: 1, size, quality });
-    coverResult = await saveGeneratedImage(imageResponse, slug);
+    // gpt-image-* returns base64 PNGs (~2 MB) by default; ask for a compressed JPEG for the web.
+    const format = isDalle3 ? {} : { output_format: "jpeg", output_compression: 82 };
+    const imageResponse = await client.images.generate({ model, prompt, n: 1, size, quality, ...format });
+    coverResult = await saveGeneratedImage(imageResponse, slug, format.output_format === "jpeg" ? "jpg" : "png");
     info(AGENT, `Saved to ${coverResult.coverImagePath}`);
   } catch (err) {
     warn(AGENT, `Image generation failed: ${err.message}`);
