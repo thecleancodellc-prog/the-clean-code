@@ -1,0 +1,67 @@
+{
+    "version":  1,
+    "businessId":  "the-clean-code",
+    "brand":  {
+                  "name":  "The Clean Code",
+                  "siteUrl":  "https://thecleancode.com",
+                  "voice":  "warm, practical, trustworthy, specific, non-corporate",
+                  "promise":  "clean living systems that make healthier homes easier"
+              },
+    "platforms":  {
+                      "pinterest":  {
+                                        "enabled":  true,
+                                        "priority":  1,
+                                        "cadence":  "2 pins per day",
+                                        "status":  "account-created",
+                                        "automation":  "draft-first"
+                                    },
+                      "instagram":  {
+                                        "enabled":  true,
+                                        "priority":  2,
+                                        "cadence":  "1 reel or carousel per day",
+                                        "status":  "account-created",
+                                        "automation":  "draft-first"
+                                    },
+                      "tiktok":  {
+                                     "enabled":  false,
+                                     "priority":  3,
+                                     "cadence":  "3-5 short videos per week",
+                                     "status":  "needs-account",
+                                     "automation":  "draft-first"
+                                 },
+                      "facebook":  {
+                                       "enabled":  false,
+                                       "priority":  4,
+                                       "cadence":  "3 posts per week",
+                                       "status":  "needs-page",
+                                       "automation":  "draft-first"
+                                   }
+                  },
+    "qualityRules":  {
+                         "requireHumanReviewBeforePosting":  true,
+                         "noMedicalClaims":  true,
+                         "noFakeProductClaims":  true,
+                         "includeAffiliateDisclosureWhenProductLinked":  true,
+                         "neverPostPlaceholderProducts":  true,
+                         "preferBlogLinksOverDirectAmazonLinks":  true
+                     },
+    "visualProduction":  {
+                             "mode":  "brief-first",
+                             "approvalRequiredBeforeAssetGeneration":  true,
+                             "defaultImageProvider":  "manual-or-subcontractor",
+                             "defaultVideoProvider":  "manual-or-subcontractor",
+                             "assetRoot":  "outputs/social-command-center/assets",
+                             "sharedDepartments":  {
+                                                       "image":  "Image Studio",
+                                                       "video":  "Video Studio",
+                                                       "creativeDirection":  "Marketing Office"
+                                                   },
+                             "targetFormats":  {
+                                                   "pinterestPin":  "1000x1500",
+                                                   "instagramCarousel":  "1080x1350",
+                                                   "instagramReel":  "1080x1920",
+                                                   "tiktokVideo":  "1080x1920",
+                                                   "facebookPost":  "1200x630"
+                                               }
+                         }
+}

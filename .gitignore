@@ -10,6 +10,10 @@
 !/outputs/.gitkeep
 !/outputs/factory-status.json
 
+# pm2 / local process logs (have contained credential-bearing git errors)
+/logs/
+*.bak
+
 # misc
 .DS_Store
 .env.local

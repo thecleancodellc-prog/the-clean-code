@@ -2,11 +2,19 @@
 // Usage: node --env-file=.env.local scripts/agents/publisher.mjs
 import fs from "fs";
 import path from "path";
+import { execSync } from "child_process";
 import { readContext, writeContext, ROOT } from "../lib/context.mjs";
-import { step, info } from "../lib/log.mjs";
+import { step, info, warn } from "../lib/log.mjs";
 
 const AGENT = "Publisher";
 const POSTS_FILE = path.join(ROOT, "data/posts.js");
+
+function sanitizeGitError(message) {
+  return String(message || "")
+    .replace(/github_pat_[A-Za-z0-9_]+/g, "[redacted-github-token]")
+    .replace(/ghp_[A-Za-z0-9_]+/g, "[redacted-github-token]")
+    .replace(/https:\/\/[^@\s"]+@github\.com/g, "https://[redacted-github-token]@github.com");
+}
 
 function serializePost(post) {
   const indent = "  ";
@@ -45,6 +53,54 @@ function serializePost(post) {
   );
 }
 
+function gitPush(agent, post) {
+  const gitEnv = {
+    ...process.env,
+    GIT_TERMINAL_PROMPT: '0',
+    GIT_ASKPASS: 'echo',
+    GCM_INTERACTIVE: 'never',
+    GIT_CREDENTIAL_INTERACTIVE: 'never',
+  };
+  const exec = (cmd) => execSync(cmd, { cwd: ROOT, stdio: "pipe", env: gitEnv, timeout: 45_000 }).toString().trim();
+  const git = 'git -c credential.helper= -c core.askPass=echo -c credential.interactive=false';
+
+  const candidates = [
+    path.join("data", "posts.js"),
+    path.join("public", "images", `${post.slug}.jpg`),
+    path.join("public", "images", `${post.slug}.png`),
+    path.join("public", "images", `${post.slug}.webp`),
+    path.join("public", "images", `${post.slug}.svg`),
+  ];
+  const toStage = candidates.filter((f) => fs.existsSync(path.join(ROOT, f)));
+
+  step(agent, `Git: staging ${toStage.length} file(s)...`);
+  exec(`${git} add ${toStage.map((f) => `"${f}"`).join(" ")}`);
+
+  try {
+    exec(`${git} commit -m "factory: add post '${post.slug}'"`);
+  } catch (e) {
+    warn(agent, "Nothing to commit - skipping push.");
+    return;
+  }
+
+  const token = (process.env.GITHUB_TOKEN || '').trim();
+  if (!token) {
+    warn(agent, "GITHUB_TOKEN missing - local post saved, GitHub push skipped.");
+    return;
+  }
+
+  step(agent, "Git: pushing to origin main without credential popups...");
+  const originUrl = exec(`${git} remote get-url origin`).replace(/^https:\/\/[^@]+@github\.com/i, 'https://github.com');
+  if (!/^https:\/\/github\.com\//i.test(originUrl)) {
+    throw new Error("Git remote must be an HTTPS GitHub URL for non-interactive token push.");
+  }
+  const authed = originUrl.replace(/^https:\/\//i, `https://${encodeURIComponent(token)}@`);
+  exec(`${git} push "${authed}" main`);
+  // Pushing to a URL (not the remote name) leaves origin/main stale, so git status reports "ahead N" forever.
+  exec(`${git} update-ref refs/remotes/origin/main HEAD`);
+  info(agent, "Pushed to origin main.");
+}
+
 export async function run() {
   const ctx = readContext();
   if (!ctx.postData) throw new Error("No postData in context. Run Scribe first.");
@@ -61,8 +117,16 @@ export async function run() {
   fs.writeFileSync(POSTS_FILE, updated, "utf8");
 
   info(AGENT, `Post appended — slug: ${post.slug}`);
+  let publishWarning = null;
+  try {
+    gitPush(AGENT, post);
+  } catch (err) {
+    publishWarning = "Local post saved, but GitHub push failed. Review GitHub token permissions before deploy.";
+    warn(AGENT, publishWarning);
+    warn(AGENT, sanitizeGitError(err.message));
+  }
 
-  const ctx2 = writeContext({ published: true, publishedSlug: post.slug });
+  const ctx2 = writeContext({ published: true, publishedSlug: post.slug, publishWarning });
   return ctx2;
 }
 

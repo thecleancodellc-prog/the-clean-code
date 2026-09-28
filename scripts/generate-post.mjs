@@ -100,8 +100,9 @@ async function researchAndGenerate(topic) {
     process.exit(1);
   }
 
-  // Always enforce author shape in case model drifts
+  // Always enforce author shape and date in case model drifts
   post.author = { name: "The Clean Code Team" };
+  post.date = today;
 
   return post;
 }

@@ -8,8 +8,40 @@
 import cron from "node-cron";
 import fs from "fs";
 import path from "path";
+import { pathToFileURL } from "url";
 import { clearContext, readContext, ROOT } from "./lib/context.mjs";
 import { divider, step, info, error, done, warn } from "./lib/log.mjs";
+import { logAction } from "./lib/logger.mjs";
+
+const ZIOMEK_DIR = process.env.ZIOMEK_DIR ?? path.resolve(ROOT, "../ziomek-city");
+
+// Windows absolute paths must be file:// URLs for ESM import(), or Node throws ERR_UNSUPPORTED_ESM_URL_SCHEME.
+function importFromZiomek(relativePath) {
+  return import(pathToFileURL(path.join(ZIOMEK_DIR, relativePath)).href);
+}
+
+// Improver lives in ziomek-city — import dynamically so TheCleanCode works standalone too.
+// It executes Ollama-generated fix scripts, so it is opt-in: set ZIOMEK_IMPROVER=on in .env.local.
+async function getImprover() {
+  if (process.env.ZIOMEK_IMPROVER !== "on") return null;
+  try {
+    const mod = await importFromZiomek("scripts/lib/improver.mjs");
+    return mod.runImprover;
+  } catch (err) {
+    warn("Improver", `Could not load improver.mjs: ${err.message}`);
+    return null;
+  }
+}
+
+// Notifier lives in ziomek-city — optional, degrades gracefully
+async function getNotifier() {
+  try {
+    return await importFromZiomek("scripts/notifier.mjs");
+  } catch (err) {
+    warn("Factory", `Notifier unavailable: ${err.message}`);
+    return null;
+  }
+}
 import {
   initFactoryRun,
   setAgentRunning,
@@ -27,6 +59,26 @@ import { run as publisher } from "./agents/publisher.mjs";
 import { run as spark }     from "./agents/spark.mjs";
 import { run as reel }      from "./agents/reel.mjs";
 import { run as mailer }    from "./agents/mailer.mjs";
+
+function readRoutineConfig() {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(ROOT, "config/routines.json"), "utf8"));
+  } catch {
+    return {};
+  }
+}
+
+async function runMaintenance(reason = "manual") {
+  try {
+    const { buildOperationsStatus } = await import("./routine-maintenance.mjs");
+    const status = buildOperationsStatus({ runOptimizerFirst: true });
+    info("Maintenance", `${reason}: ${status.qualityGates.status}`);
+    return status;
+  } catch (err) {
+    warn("Maintenance", `Routine maintenance failed: ${err.message}`);
+    return null;
+  }
+}
 
 const PIPELINE = [
   { name: "Scout",     fn: scout,     desc: "Research & pick topic"         },
@@ -60,11 +112,13 @@ export async function runFactory() {
   clearContext();
   initFactoryRun();
 
+  const notifier = await getNotifier();
   const results = { passed: [], failed: [], skipped: [] };
 
   for (const { name, fn, desc } of PIPELINE) {
     divider(`${name} — ${desc}`);
     setAgentRunning(name, desc);
+    const agentStart = Date.now();
     try {
       await fn();
       results.passed.push(name);
@@ -79,10 +133,17 @@ export async function runFactory() {
         name === "Reel"      ? `Saved: ${ctx.reelFile ?? ""}` :
         name === "Mailer"    ? `Saved: ${ctx.emailFile ?? ""}` : "Done";
       setAgentComplete(name, completedMsg);
+      logAction({ agent: name, action: desc, method: 'pipeline', result: 'SUCCESS', output: completedMsg, durationMs: Date.now() - agentStart }).catch(() => {});
+      // Reset failure counter on success
+      if (notifier) notifier.resetAgentFailureCount(name);
     } catch (err) {
       error(name, `FAILED: ${err.message}`);
       setAgentError(name, err.message);
+      logAction({ agent: name, action: desc, method: 'pipeline', result: 'FAILED', durationMs: Date.now() - agentStart, error: err }).catch(() => {});
       results.failed.push({ name, reason: err.message });
+
+      // Track cross-run failure count — notify at 3
+      if (notifier) notifier.checkAndNotifyAgentFailure(name, err.message).catch(() => {});
 
       const fatalAfter = ["Scout", "Scribe"];
       if (fatalAfter.includes(name)) {
@@ -120,18 +181,24 @@ export async function runFactory() {
   }
 
   done(`Factory run finished in ${elapsed}s`);
+
+  // Send Windows toast notification for factory completion
+  if (notifier) notifier.sendFactoryComplete(results);
+
   return results;
 }
 
 // ─── Entry point ──────────────────────────────────────────────────────────────
 
 const isScheduled = process.argv.includes("--schedule");
+const isMaintenanceOnly = process.argv.includes("--maintenance");
 
 if (isScheduled) {
-  const CRON_EXPRESSION = "0 6 * * 1,3,5";
+  const routineConfig = readRoutineConfig();
+  const CRON_EXPRESSION = routineConfig.factory?.cron || "0 6 * * 1,3,5";
 
   divider("THE CLEAN CODE — FACTORY SCHEDULER");
-  console.log(`  Schedule : ${CRON_EXPRESSION}  (Mon / Wed / Fri at 6:00am)`);
+  console.log(`  Schedule : ${CRON_EXPRESSION}  (${routineConfig.factory?.label || "Mon / Wed / Fri at 6:00am"})`);
   console.log(`  Status   : Waiting for next trigger...`);
   console.log(`  Started  : ${new Date().toLocaleString()}\n`);
 
@@ -144,16 +211,44 @@ if (isScheduled) {
     console.log(`\n[Scheduler] Triggered at ${new Date().toLocaleString()}`);
     try {
       await runFactory();
+      await runMaintenance("after-factory");
     } catch (err) {
       error("Scheduler", `Unhandled factory error: ${err.message}`);
     }
   });
+
+  const MAINTENANCE_CRON = routineConfig.maintenance?.cron || "30 6 * * 1,3,5";
+  if (routineConfig.maintenance?.enabled !== false && cron.validate(MAINTENANCE_CRON)) {
+    cron.schedule(MAINTENANCE_CRON, () => runMaintenance("scheduled-maintenance"));
+    console.log(`  Maintenance: ${routineConfig.maintenance?.label || MAINTENANCE_CRON}`);
+  }
+
+  // Sunday 08:00 — self-improvement cycle
+  const SUNDAY_CRON = "0 8 * * 0";
+  cron.schedule(SUNDAY_CRON, async () => {
+    divider("ZIOMEK SELF-IMPROVEMENT — SUNDAY CYCLE");
+    console.log(`  Started: ${new Date().toLocaleString()}`);
+    try {
+      const runImprover = await getImprover();
+      if (!runImprover) {
+        warn("Improver", "Improver disabled or unavailable (set ZIOMEK_IMPROVER=on to enable) — skipping.");
+        return;
+      }
+      const result = await runImprover();
+      done(`Self-improvement complete: ${result.deployed} deployed, ${result.pending} pending`);
+    } catch (err) {
+      error("Improver", `Self-improvement failed: ${err.message}`);
+    }
+  });
+  console.log(`  Self-improvement: Sundays at 08:00\n`);
 
   process.on("SIGINT", () => {
     console.log("\n[Scheduler] Shutting down.");
     process.exit(0);
   });
 
+} else if (isMaintenanceOnly) {
+  await runMaintenance("maintenance-only");
 } else {
   await runFactory();
 }

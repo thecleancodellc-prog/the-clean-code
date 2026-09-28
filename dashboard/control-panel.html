@@ -3,365 +3,568 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Clean Code — Factory Control Panel</title>
+  <title>TCC FACTORY — Mission Control</title>
   <style>
     :root {
-      --bg: #060d09;
-      --surface: #0d1f14;
-      --border: #1a3a22;
-      --green: #34d399;
-      --green-dim: #1a6644;
-      --green-bright: #6ee7b7;
-      --amber: #fbbf24;
-      --red: #f87171;
-      --blue: #60a5fa;
-      --text: #d1fae5;
-      --text-dim: #6b9e80;
-      --font: "Courier New", Courier, monospace;
+      --bg:           #020c05;
+      --surface:      #06140a;
+      --surface2:     #0a1e10;
+      --border:       #0f2e18;
+      --border-hi:    #1a4a26;
+      --green:        #00ff6a;
+      --green-mid:    #00c44f;
+      --green-dim:    #1a5c32;
+      --green-ghost:  #00ff6a14;
+      --amber:        #ffcc00;
+      --red:          #ff4444;
+      --blue:         #4af0ff;
+      --purple:       #c084fc;
+      --text:         #b8f0cc;
+      --text-dim:     #3d7a52;
+      --text-bright:  #e8fff0;
+      --font:         "Courier New", Courier, monospace;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 13px; min-height: 100vh; }
+    html, body { height: 100%; overflow: hidden; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 12px; display: flex; flex-direction: column; }
 
-    /* ── Header ── */
+    /* ── scanline overlay ── */
+    body::after {
+      content: "";
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.07) 2px, rgba(0,0,0,.07) 4px);
+      pointer-events: none; z-index: 999;
+    }
+
+    /* ── HEADER ── */
     header {
-      border-bottom: 1px solid var(--border);
-      padding: 14px 24px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border-hi);
+      padding: 0 20px;
+      height: 48px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: var(--surface);
+      flex-shrink: 0;
+      position: relative;
     }
-    header h1 { font-size: 15px; color: var(--green); letter-spacing: 2px; text-transform: uppercase; }
+    header::after {
+      content: "";
+      position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--green), transparent);
+      opacity: .4;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .logo-hex {
+      font-size: 20px; color: var(--green); line-height: 1;
+      text-shadow: 0 0 12px var(--green);
+    }
+    .logo-text {
+      font-size: 14px; font-weight: bold; letter-spacing: 4px;
+      color: var(--green); text-transform: uppercase;
+      text-shadow: 0 0 8px var(--green-dim);
+    }
+    .logo-sub { font-size: 9px; color: var(--text-dim); letter-spacing: 3px; }
+
+    .header-center {
+      position: absolute; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 24px; align-items: center;
+    }
+    .sys-badge {
+      font-size: 9px; letter-spacing: 2px; color: var(--text-dim);
+      border: 1px solid var(--border); padding: 3px 8px; border-radius: 2px;
+    }
+    .sys-badge.ok { color: var(--green-mid); border-color: var(--green-dim); }
+
     .header-right { display: flex; align-items: center; gap: 20px; }
-    .pulse-dot {
-      width: 9px; height: 9px; border-radius: 50%; background: var(--green-dim);
-      display: inline-block; margin-right: 6px;
-      transition: background 0.3s;
+    .live-clock { font-size: 18px; color: var(--green); letter-spacing: 3px; font-weight: bold; }
+    .live-date  { font-size: 9px; color: var(--text-dim); letter-spacing: 2px; text-align: right; }
+    .run-dot    { display: flex; align-items: center; gap: 6px; }
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--green-dim);
+      transition: background .3s;
     }
-    .pulse-dot.active { background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 1s infinite; }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-    .status-label { font-size: 11px; color: var(--text-dim); }
-    .last-update { font-size: 11px; color: var(--text-dim); }
+    .dot.live { background: var(--green); box-shadow: 0 0 10px var(--green); animation: blink 1s ease-in-out infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .run-label { font-size: 10px; color: var(--text-dim); letter-spacing: 2px; }
 
-    /* ── Layout ── */
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 320px;
-      grid-template-rows: auto 1fr;
-      gap: 1px;
-      background: var(--border);
-      height: calc(100vh - 49px);
-    }
-    .panel {
-      background: var(--bg);
-      padding: 16px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-    .panel-title {
-      font-size: 10px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 8px;
-      margin-bottom: 12px;
-    }
-
-    /* ── Stats bar ── */
+    /* ── STATS BAR ── */
     .stats-bar {
-      grid-column: 1 / -1;
       display: flex;
-      gap: 1px;
-      background: var(--border);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      background: var(--surface);
     }
     .stat {
       flex: 1;
-      background: var(--surface);
-      padding: 12px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
+      padding: 10px 18px;
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 2px;
     }
-    .stat-value { font-size: 28px; color: var(--green); font-weight: bold; }
-    .stat-label { font-size: 10px; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; }
-    .stat-sub { font-size: 11px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .stat:last-child { border-right: none; }
+    .stat-val {
+      font-size: 26px; font-weight: bold; color: var(--green);
+      text-shadow: 0 0 10px var(--green-dim); line-height: 1;
+    }
+    .stat-val.amber { color: var(--amber); text-shadow: 0 0 10px #6a4800; }
+    .stat-val.blue  { color: var(--blue);  text-shadow: 0 0 10px #004a6a; }
+    .stat-lbl { font-size: 9px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }
+    .stat-sub { font-size: 9px; color: var(--text-dim); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* ── Agents grid ── */
+    /* ── MAIN GRID ── */
+    .main {
+      display: grid;
+      grid-template-columns: 420px 1fr 260px;
+      gap: 1px;
+      background: var(--border);
+      flex: 1;
+      overflow: hidden;
+    }
+    .col { background: var(--bg); display: flex; flex-direction: column; overflow: hidden; }
+
+    .section { flex-shrink: 0; }
+    .section-title {
+      font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--text-dim); padding: 10px 14px 8px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .section-title span { color: var(--green-mid); }
+
+    /* ── AGENT GRID ── */
     .agents-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      overflow-y: auto;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      flex: 1;
+      overflow: hidden;
     }
     .agent-card {
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 10px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      transition: border-color 0.3s, background 0.3s;
       background: var(--surface);
+      padding: 10px 10px 8px;
+      display: flex; flex-direction: column; gap: 5px;
+      cursor: default;
+      transition: background .2s;
+      position: relative;
+      overflow: hidden;
     }
-    .agent-card.running  { border-color: var(--green); background: #0a1f12; }
-    .agent-card.complete { border-color: var(--green-dim); }
-    .agent-card.error    { border-color: var(--red); background: #1a0a0a; }
-    .agent-card.skipped  { opacity: 0.4; }
+    .agent-card.running  { background: #051a0c; }
+    .agent-card.complete { background: var(--surface); }
+    .agent-card.error    { background: #1a0505; }
+    .agent-card.idle     { background: var(--surface); }
 
-    .agent-header { display: flex; align-items: center; justify-content: space-between; }
-    .agent-name { font-size: 12px; color: var(--green-bright); font-weight: bold; }
-    .agent-badge {
-      font-size: 9px; padding: 2px 6px; border-radius: 2px;
-      text-transform: uppercase; letter-spacing: 1px;
+    /* glow top border when running */
+    .agent-card.running::before {
+      content: "";
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      animation: glowline 1s ease-in-out infinite;
     }
-    .badge-idle     { background: #1a2520; color: var(--text-dim); }
-    .badge-running  { background: #0f3020; color: var(--green); animation: pulse 1s infinite; }
-    .badge-complete { background: #0a2515; color: var(--green); }
-    .badge-error    { background: #2a0f0f; color: var(--red); }
-    .badge-skipped  { background: #1a1a1a; color: #555; }
+    @keyframes glowline { 0%,100%{opacity:1}50%{opacity:.3} }
 
-    .agent-msg { font-size: 10px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .agent-time { font-size: 9px; color: #3a5a48; }
-
-    /* ── Posts panel ── */
-    .posts-list { overflow-y: auto; flex: 1; }
-    .post-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 0;
-      border-bottom: 1px solid var(--border);
-      gap: 8px;
+    .agent-top { display: flex; align-items: center; justify-content: space-between; }
+    .agent-emoji { font-size: 16px; line-height: 1; }
+    .agent-status-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--text-dim); flex-shrink: 0;
     }
-    .post-title { font-size: 11px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
-    .post-date { font-size: 10px; color: var(--text-dim); white-space: nowrap; }
-    .post-featured { font-size: 9px; color: var(--amber); margin-left: 4px; }
+    .agent-status-dot.running  { background: var(--green); box-shadow: 0 0 6px var(--green); animation: blink 1s infinite; }
+    .agent-status-dot.complete { background: var(--green-mid); }
+    .agent-status-dot.error    { background: var(--red); }
 
-    /* ── Activity feed ── */
-    .feed { overflow-y: auto; flex: 1; }
+    .agent-name { font-size: 10px; font-weight: bold; color: var(--text-bright); letter-spacing: 1px; }
+    .agent-role { font-size: 9px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .agent-action { font-size: 9px; color: var(--green-mid); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 11px; }
+    .agent-card.running .agent-action { color: var(--green); }
+    .agent-card.error   .agent-action { color: var(--red); }
+
+    /* XP bar */
+    .xp-wrap { display: flex; align-items: center; gap: 5px; }
+    .xp-bar  { flex: 1; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .xp-fill {
+      height: 100%; background: var(--green-dim);
+      border-radius: 2px; transition: width .6s ease;
+    }
+    .xp-fill.complete { background: var(--green-mid); }
+    .xp-fill.running  { background: var(--green); box-shadow: 0 0 4px var(--green); animation: xppulse 1s ease-in-out infinite; }
+    .xp-fill.error    { background: var(--red); }
+    @keyframes xppulse { 0%,100%{opacity:1}50%{opacity:.5} }
+    .xp-lbl { font-size: 8px; color: var(--text-dim); width: 22px; text-align: right; }
+
+    /* ── MIDDLE COL ── */
+    .feed-wrap { flex: 1; overflow-y: auto; padding: 0; }
     .feed-entry {
-      padding: 5px 0;
+      display: flex; gap: 8px; align-items: flex-start;
+      padding: 6px 14px;
       border-bottom: 1px solid var(--border);
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
+      transition: background .2s;
     }
-    .feed-time { font-size: 10px; color: var(--text-dim); white-space: nowrap; flex-shrink: 0; }
-    .feed-msg { font-size: 11px; color: var(--text); }
-    .feed-msg.success { color: var(--green); }
-    .feed-msg.fail    { color: var(--red); }
-    .feed-msg.start   { color: var(--amber); }
+    .feed-entry:hover { background: var(--surface); }
+    .feed-time { font-size: 9px; color: var(--text-dim); white-space: nowrap; flex-shrink: 0; padding-top: 1px; }
+    .feed-icon { flex-shrink: 0; font-size: 10px; }
+    .feed-msg  { font-size: 10px; color: var(--text); }
+    .feed-msg.ok    { color: var(--green); }
+    .feed-msg.err   { color: var(--red); }
+    .feed-msg.start { color: var(--amber); }
+    .feed-msg.done  { color: var(--blue); }
 
-    /* ── Current agent banner ── */
-    .current-banner {
-      background: var(--surface);
-      border: 1px solid var(--green-dim);
-      border-radius: 4px;
-      padding: 8px 12px;
-      margin-bottom: 12px;
-      font-size: 11px;
-      color: var(--green);
-      display: none;
+    .queue-wrap { overflow-y: auto; }
+    .queue-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 6px 14px;
+      border-bottom: 1px solid var(--border);
+      gap: 10px;
     }
-    .current-banner.visible { display: block; }
-    .blink { animation: blink 1s step-end infinite; }
-    @keyframes blink { 50% { opacity: 0; } }
+    .queue-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green-dim); flex-shrink: 0; }
+    .queue-title { font-size: 10px; color: var(--text); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .queue-tag { font-size: 8px; color: var(--text-dim); white-space: nowrap; }
+
+    /* ── RIGHT COL ── */
+    .wa-wrap { padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+    .wa-title { font-size: 9px; color: var(--text-dim); letter-spacing: 1px; margin-bottom: 2px; }
+    .wa-msg {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 2px; padding: 7px 10px;
+      font-size: 10px;
+    }
+    .wa-msg.incoming { border-left: 2px solid var(--green-mid); color: var(--text-bright); }
+    .wa-msg.outgoing { border-left: 2px solid var(--text-dim); color: var(--text-dim); text-align: right; }
+    .wa-meta { font-size: 8px; color: var(--text-dim); margin-top: 3px; }
+    .wa-cmd  { color: var(--green); font-weight: bold; }
+
+    .seo-wrap { overflow-y: auto; }
+    .seo-row  {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 14px; border-bottom: 1px solid var(--border);
+    }
+    .seo-rank { font-size: 11px; font-weight: bold; color: var(--green); width: 20px; text-align: right; flex-shrink: 0; }
+    .seo-rank.drop { color: var(--red); }
+    .seo-rank.hold { color: var(--amber); }
+    .seo-kw   { font-size: 10px; color: var(--text); flex: 1; }
+    .seo-vol  { font-size: 9px; color: var(--text-dim); white-space: nowrap; }
+    .seo-chg  { font-size: 9px; width: 28px; text-align: right; flex-shrink: 0; }
+    .seo-chg.up   { color: var(--green); }
+    .seo-chg.down { color: var(--red); }
+    .seo-chg.flat { color: var(--text-dim); }
 
     /* scrollbar */
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 2px; }
   </style>
 </head>
 <body>
 
+<!-- ═══════════════════════════════ HEADER ═══════════════════════════════ -->
 <header>
-  <h1>⬡ The Clean Code — Factory Control Panel</h1>
+  <div class="logo">
+    <div class="logo-hex">⬡</div>
+    <div>
+      <div class="logo-text">TCC Factory</div>
+      <div class="logo-sub">Mission Control v2</div>
+    </div>
+  </div>
+
+  <div class="header-center">
+    <div class="sys-badge ok">SYS ONLINE</div>
+    <div class="sys-badge ok" id="h-agent-badge">AGENTS IDLE</div>
+    <div class="sys-badge" id="h-sched-badge">SCHED MON·WED·FRI 06:00</div>
+  </div>
+
   <div class="header-right">
-    <span id="running-indicator">
-      <span class="pulse-dot" id="pulse"></span>
-      <span class="status-label" id="run-status">IDLE</span>
-    </span>
-    <span class="last-update" id="last-update">—</span>
+    <div class="run-dot">
+      <div class="dot" id="run-dot"></div>
+      <div class="run-label" id="run-label">IDLE</div>
+    </div>
+    <div>
+      <div class="live-clock" id="clock">00:00:00</div>
+      <div class="live-date"  id="date-lbl">—</div>
+    </div>
   </div>
 </header>
 
-<div class="grid">
-
-  <!-- Stats bar -->
-  <div class="stats-bar">
-    <div class="stat">
-      <div class="stat-value" id="stat-posts">—</div>
-      <div class="stat-label">Posts Published</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value" id="stat-social">—</div>
-      <div class="stat-label">Social Caption Sets</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value" id="stat-reels">—</div>
-      <div class="stat-label">Reel Scripts</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value" id="stat-emails">—</div>
-      <div class="stat-label">Email Drafts</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value" id="stat-images">—</div>
-      <div class="stat-label">Cover Images</div>
-    </div>
-    <div class="stat" style="flex:2">
-      <div class="stat-sub" id="stat-last-post">Last post: —</div>
-      <div class="stat-sub" id="stat-last-run">Last run: —</div>
-    </div>
+<!-- ══════════════════════════════ STATS BAR ═════════════════════════════ -->
+<div class="stats-bar">
+  <div class="stat">
+    <div class="stat-val" id="s-posts">—</div>
+    <div class="stat-lbl">Posts Published</div>
+    <div class="stat-sub" id="s-lastpost">Last post: —</div>
   </div>
+  <div class="stat">
+    <div class="stat-val amber">—</div>
+    <div class="stat-lbl">Visitors Today</div>
+    <div class="stat-sub">via Google Analytics</div>
+  </div>
+  <div class="stat">
+    <div class="stat-val amber">—</div>
+    <div class="stat-lbl">Affiliate Clicks</div>
+    <div class="stat-sub">Amazon Associates</div>
+  </div>
+  <div class="stat">
+    <div class="stat-val blue">—</div>
+    <div class="stat-lbl">Est. Revenue</div>
+    <div class="stat-sub">AdSense + Affiliate</div>
+  </div>
+  <div class="stat" style="flex:1.4">
+    <div class="stat-val" id="s-social">—</div>
+    <div class="stat-lbl">Social Sets</div>
+    <div class="stat-sub" id="s-lastrun">Last run: —</div>
+  </div>
+</div>
 
-  <!-- Agents panel -->
-  <div class="panel">
-    <div class="panel-title">Agent Pipeline</div>
-    <div class="current-banner" id="current-banner">
-      ▶ Running: <strong id="current-agent-name">—</strong> <span class="blink">█</span>
-    </div>
+<!-- ═══════════════════════════════ MAIN ════════════════════════════════ -->
+<div class="main">
+
+  <!-- ── LEFT: AGENT GRID ── -->
+  <div class="col">
+    <div class="section-title">Agent Pipeline <span id="pipeline-status">STANDBY</span></div>
     <div class="agents-grid" id="agents-grid">
       <!-- populated by JS -->
     </div>
   </div>
 
-  <!-- Posts panel -->
-  <div class="panel">
-    <div class="panel-title">Published Posts (<span id="post-count">0</span>)</div>
-    <div class="posts-list" id="posts-list">
-      <div style="color:var(--text-dim);font-size:11px;">Loading...</div>
+  <!-- ── MIDDLE: FEED + QUEUE ── -->
+  <div class="col">
+    <div class="section-title" style="flex-shrink:0">Live Activity Feed <span id="feed-count">0 events</span></div>
+    <div class="feed-wrap" id="feed" style="flex:1.2"></div>
+
+    <div class="section-title" style="flex-shrink:0;border-top:1px solid var(--border)">
+      Content Queue <span>UPCOMING</span>
     </div>
+    <div class="queue-wrap" id="queue" style="flex:1; overflow-y:auto;"></div>
   </div>
 
-  <!-- Activity feed -->
-  <div class="panel">
-    <div class="panel-title">Activity Feed</div>
-    <div class="feed" id="feed">
-      <div style="color:var(--text-dim);font-size:11px;">Waiting for activity...</div>
+  <!-- ── RIGHT: WHATSAPP + SEO ── -->
+  <div class="col">
+    <div class="section-title">WhatsApp Commands <span>MOCKUP</span></div>
+    <div class="wa-wrap">
+      <div class="wa-msg incoming">
+        <div><span class="wa-cmd">!status</span></div>
+        <div class="wa-meta">You · just now</div>
+      </div>
+      <div class="wa-msg outgoing">
+        <div id="wa-reply">Factory idle. Last post: checking...</div>
+        <div class="wa-meta">TCC Bot · just now</div>
+      </div>
+      <div class="wa-msg incoming">
+        <div><span class="wa-cmd">!run</span></div>
+        <div class="wa-meta">You · —</div>
+      </div>
+      <div class="wa-msg outgoing">
+        <div>Triggering factory pipeline now... 🚀</div>
+        <div class="wa-meta">TCC Bot · —</div>
+      </div>
+      <div class="wa-msg incoming">
+        <div><span class="wa-cmd">!posts</span></div>
+        <div class="wa-meta">You · —</div>
+      </div>
+      <div class="wa-msg outgoing">
+        <div id="wa-posts-reply">Loading post count...</div>
+        <div class="wa-meta">TCC Bot · —</div>
+      </div>
+    </div>
+
+    <div class="section-title" style="border-top:1px solid var(--border)">SEO Rankings <span>SIMULATED</span></div>
+    <div class="seo-wrap" id="seo-wrap">
+      <!-- populated by JS -->
     </div>
   </div>
 
 </div>
 
 <script>
-  const AGENTS = ["Scout","Amazon","Scribe","Image","Publisher","Spark","Reel","Mailer"];
-  const AGENT_DESC = {
-    Scout: "Research & pick topic",
-    Amazon: "Find affiliate product",
-    Scribe: "Write full post",
-    Image: "Generate cover image",
-    Publisher: "Publish to posts.js",
-    Spark: "Write social captions",
-    Reel: "Write video script",
-    Mailer: "Draft newsletter",
-  };
+  // ── Agent definitions ──────────────────────────────────────────────────────
+  const AGENTS = [
+    { name: "Scout",     emoji: "🔍", role: "Research & topic pick" },
+    { name: "Amazon",    emoji: "📦", role: "Find affiliate product" },
+    { name: "Scribe",    emoji: "✍️",  role: "Write full post" },
+    { name: "Image",     emoji: "🖼️",  role: "Generate cover image" },
+    { name: "Publisher", emoji: "📤", role: "Publish to posts.js + git" },
+    { name: "Spark",     emoji: "⚡", role: "Write social captions" },
+    { name: "Reel",      emoji: "🎬", role: "Short-form video script" },
+    { name: "Mailer",    emoji: "📧", role: "Draft newsletter" },
+    { name: "Analyst",   emoji: "📊", role: "Performance analysis" },
+  ];
 
-  function formatTime(iso) {
+  // XP: total lifetime completions (cosmetic, seeded by agent position)
+  const BASE_XP = { Scout:88, Amazon:75, Scribe:92, Image:81, Publisher:95, Spark:70, Reel:65, Mailer:60, Analyst:40 };
+
+  // ── SEO data (static/simulated) ────────────────────────────────────────────
+  const SEO_ROWS = [
+    { rank:3,  kw:"non toxic cleaning products", vol:"14k/mo", chg:"+2", dir:"up" },
+    { rank:7,  kw:"eco friendly home products",  vol:"9.4k/mo",chg:"–",  dir:"flat" },
+    { rank:11, kw:"clean living blog",           vol:"5.1k/mo",chg:"+4", dir:"up" },
+    { rank:14, kw:"non toxic pest control",      vol:"3.8k/mo",chg:"+1", dir:"up" },
+    { rank:19, kw:"sustainable home office",     vol:"2.9k/mo",chg:"-3", dir:"down" },
+    { rank:23, kw:"green cleaning diy",          vol:"2.1k/mo",chg:"–",  dir:"flat" },
+    { rank:31, kw:"zero waste kitchen tips",     vol:"1.7k/mo",chg:"+6", dir:"up" },
+  ];
+
+  // ── Clock ──────────────────────────────────────────────────────────────────
+  function tickClock() {
+    const now = new Date();
+    document.getElementById("clock").textContent =
+      now.toLocaleTimeString("en-US", { hour12: false });
+    document.getElementById("date-lbl").textContent =
+      now.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" }).toUpperCase();
+  }
+  tickClock();
+  setInterval(tickClock, 1000);
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  function fmt(iso) {
     if (!iso) return "—";
-    const d = new Date(iso);
-    return d.toLocaleTimeString("en-US", { hour12: false });
+    return new Date(iso).toLocaleTimeString("en-US", { hour12: false });
+  }
+  function fmtDT(iso) {
+    if (!iso) return "—";
+    return new Date(iso).toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false });
   }
 
-  function formatDateTime(iso) {
-    if (!iso) return "—";
-    const d = new Date(iso);
-    return d.toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false });
+  function xpPct(agentName, status) {
+    if (status === "complete") return 100;
+    if (status === "running")  return 60;
+    if (status === "error")    return BASE_XP[agentName] ?? 30;
+    return 0;
   }
 
-  function renderAgents(agents) {
+  // ── Render agents ──────────────────────────────────────────────────────────
+  function renderAgents(agentData) {
     const grid = document.getElementById("agents-grid");
-    grid.innerHTML = AGENTS.map(name => {
-      const a = agents[name] ?? { status: "idle", lastMessage: "", updatedAt: null };
+    grid.innerHTML = AGENTS.map(({ name, emoji, role }) => {
+      const a = agentData?.[name] ?? { status: "idle", lastMessage: "", updatedAt: null };
+      const st  = a.status || "idle";
+      const pct = xpPct(name, st);
+      const action = a.lastMessage || role;
       return `
-        <div class="agent-card ${a.status}">
-          <div class="agent-header">
-            <span class="agent-name">${name}</span>
-            <span class="agent-badge badge-${a.status}">${a.status}</span>
+        <div class="agent-card ${st}">
+          <div class="agent-top">
+            <span class="agent-emoji">${emoji}</span>
+            <span class="agent-status-dot ${st}"></span>
           </div>
-          <div class="agent-msg">${a.lastMessage || AGENT_DESC[name]}</div>
-          <div class="agent-time">${a.updatedAt ? formatTime(a.updatedAt) : ""}</div>
+          <div class="agent-name">${name}</div>
+          <div class="agent-role">${role}</div>
+          <div class="agent-action">${action}</div>
+          <div class="xp-wrap">
+            <div class="xp-bar">
+              <div class="xp-fill ${st}" style="width:${pct}%"></div>
+            </div>
+            <div class="xp-lbl">${pct}%</div>
+          </div>
         </div>`;
     }).join("");
   }
 
+  // ── Render feed ────────────────────────────────────────────────────────────
   function renderFeed(feed) {
     const el = document.getElementById("feed");
-    if (!feed || feed.length === 0) {
-      el.innerHTML = `<div style="color:var(--text-dim);font-size:11px;">No activity yet.</div>`;
+    const entries = (feed || []).slice(0, 8);
+    document.getElementById("feed-count").textContent = `${feed?.length ?? 0} events`;
+    if (!entries.length) {
+      el.innerHTML = `<div style="padding:14px;color:var(--text-dim);font-size:10px;">No activity yet.</div>`;
       return;
     }
-    el.innerHTML = feed.map(entry => {
-      const cls = entry.message.includes("✓") ? "success"
-                : entry.message.includes("✗") ? "fail"
-                : entry.message.toLowerCase().includes("started") ? "start" : "";
+    el.innerHTML = entries.map(e => {
+      const ok    = e.message.includes("✓") || e.message.includes("complete");
+      const err   = e.message.includes("✗") || e.message.includes("FAILED");
+      const start = e.message.toLowerCase().includes("started");
+      const done  = e.message.toLowerCase().includes("complete") && !err;
+      const cls   = err ? "err" : done ? "done" : ok ? "ok" : start ? "start" : "";
+      const icon  = err ? "✗" : ok ? "✓" : start ? "▶" : done ? "◼" : "·";
       return `<div class="feed-entry">
-        <span class="feed-time">${formatTime(entry.time)}</span>
-        <span class="feed-msg ${cls}">${entry.message}</span>
+        <span class="feed-time">${fmt(e.time)}</span>
+        <span class="feed-icon" style="color:${err?"var(--red)":ok?"var(--green)":start?"var(--amber)":"var(--text-dim)"}">${icon}</span>
+        <span class="feed-msg ${cls}">${e.message}</span>
       </div>`;
     }).join("");
   }
 
-  function renderPosts(data) {
-    document.getElementById("post-count").textContent = data.count;
-    document.getElementById("stat-posts").textContent = data.count;
-    document.getElementById("stat-social").textContent = data.outputs.social;
-    document.getElementById("stat-reels").textContent = data.outputs.reels;
-    document.getElementById("stat-emails").textContent = data.outputs.emails;
-    document.getElementById("stat-images").textContent = data.outputs.images;
+  // ── Render queue ────────────────────────────────────────────────────────────
+  function renderQueue(posts) {
+    const el = document.getElementById("queue");
+    const days = ["Mon","Wed","Fri"];
+    const topics = [
+      "Zero Waste Bathroom Swaps",
+      "DIY Natural Air Freshener",
+      "Plastic-Free Kitchen Guide",
+      "Non-Toxic Baby Products",
+      "Eco Laundry Detergent Review",
+    ];
+    // Show last 2 real posts + upcoming simulated queue
+    const upcoming = topics.map((t, i) => ({ title: t, tag: `${days[i % 3]} · Scheduled`, sim: true }));
+    const recent   = (posts || []).slice(-2).reverse().map(p => ({ title: p.title, tag: `Published · ${p.date}`, sim: false }));
+    const rows = [...recent, ...upcoming.slice(0, 4)];
 
-    const list = document.getElementById("posts-list");
-    list.innerHTML = [...data.posts].reverse().map(p => `
-      <div class="post-row">
-        <span class="post-title">${p.title}${p.featured ? '<span class="post-featured">★</span>' : ""}</span>
-        <span class="post-date">${p.date}</span>
+    el.innerHTML = rows.map(r => `
+      <div class="queue-row">
+        <div class="queue-dot" style="${r.sim ? "" : "background:var(--green-mid)"}"></div>
+        <div class="queue-title">${r.title}</div>
+        <div class="queue-tag">${r.tag}</div>
+      </div>`).join("") || `<div style="padding:14px;color:var(--text-dim);font-size:10px;">No posts found.</div>`;
+  }
+
+  // ── Render SEO ─────────────────────────────────────────────────────────────
+  function renderSEO() {
+    document.getElementById("seo-wrap").innerHTML = SEO_ROWS.map(r => `
+      <div class="seo-row">
+        <div class="seo-rank ${r.dir === "down" ? "drop" : r.dir === "flat" ? "hold" : ""}">#${r.rank}</div>
+        <div class="seo-kw">${r.kw}</div>
+        <div class="seo-vol">${r.vol}</div>
+        <div class="seo-chg ${r.dir}">${r.chg}</div>
       </div>`).join("");
   }
 
+  // ── Main refresh ───────────────────────────────────────────────────────────
   async function refresh() {
     try {
-      const [statusRes, postsRes] = await Promise.all([
-        fetch("/api/status"),
-        fetch("/api/posts"),
-      ]);
-      const status = await statusRes.json();
-      const posts  = await postsRes.json();
+      const [sRes, pRes] = await Promise.all([fetch("/api/status"), fetch("/api/posts")]);
+      const s = await sRes.json();
+      const p = await pRes.json();
 
-      // Header
-      const pulse = document.getElementById("pulse");
-      const runStatus = document.getElementById("run-status");
-      pulse.classList.toggle("active", status.isRunning);
-      runStatus.textContent = status.isRunning ? "RUNNING" : "IDLE";
-      document.getElementById("last-update").textContent =
-        status.lastUpdate ? `Updated ${formatTime(status.lastUpdate)}` : "—";
+      // Header state
+      const running = s.isRunning;
+      document.getElementById("run-dot").classList.toggle("live", running);
+      document.getElementById("run-label").textContent = running ? (s.currentAgent ? `RUNNING · ${s.currentAgent.toUpperCase()}` : "RUNNING") : "IDLE";
+      document.getElementById("h-agent-badge").textContent = running ? `▶ ${s.currentAgent ?? "AGENTS"}` : "AGENTS IDLE";
+      document.getElementById("h-agent-badge").style.color = running ? "var(--green)" : "";
+      document.getElementById("h-agent-badge").style.borderColor = running ? "var(--green-dim)" : "";
 
-      // Current agent banner
-      const banner = document.getElementById("current-banner");
-      if (status.isRunning && status.currentAgent) {
-        banner.classList.add("visible");
-        document.getElementById("current-agent-name").textContent = status.currentAgent;
-      } else {
-        banner.classList.remove("visible");
-      }
+      // Pipeline label
+      document.getElementById("pipeline-status").textContent =
+        running ? (s.currentAgent ? `▶ ${s.currentAgent.toUpperCase()}` : "RUNNING") : "STANDBY";
 
       // Stats
-      document.getElementById("stat-last-post").textContent =
-        status.stats.lastPostTitle ? `Last post: ${status.stats.lastPostTitle}` : "Last post: —";
-      document.getElementById("stat-last-run").textContent =
-        status.lastRunDate ? `Last run: ${formatDateTime(status.lastRunDate)}` : "Last run: —";
+      document.getElementById("s-posts").textContent  = p.count ?? "—";
+      document.getElementById("s-social").textContent = s.stats?.totalSocialCaptions ?? "—";
+      document.getElementById("s-lastpost").textContent =
+        s.stats?.lastPostTitle ? `"${s.stats.lastPostTitle.slice(0, 36)}..."` : "Last post: —";
+      document.getElementById("s-lastrun").textContent =
+        s.lastRunDate ? `Last run: ${fmtDT(s.lastRunDate)}` : "Last run: —";
 
-      renderAgents(status.agents);
-      renderFeed(status.activityFeed);
-      renderPosts(posts);
+      // WhatsApp bot reply
+      document.getElementById("wa-reply").textContent =
+        running
+          ? `⚙️ Running — ${s.currentAgent ?? "pipeline"} active.`
+          : s.stats?.lastPostTitle
+          ? `Idle. Last: "${s.stats.lastPostTitle.slice(0,40)}"`
+          : "Factory idle. No posts yet.";
+      document.getElementById("wa-posts-reply").textContent =
+        `${p.count ?? 0} posts published. Last: "${(p.posts?.slice(-1)[0]?.title ?? "—").slice(0,30)}"`;
+
+      renderAgents(s.agents);
+      renderFeed(s.activityFeed);
+      renderQueue(p.posts);
 
     } catch (e) {
       console.warn("Fetch error:", e.message);
     }
   }
 
+  renderSEO();
   refresh();
   setInterval(refresh, 5000);
 </script>

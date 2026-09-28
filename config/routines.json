@@ -1,0 +1,52 @@
+{
+    "version":  1,
+    "businessId":  "the-clean-code",
+    "businessName":  "The Clean Code",
+    "timezone":  "America/New_York",
+    "factory":  {
+                    "enabled":  true,
+                    "cron":  "0 6 * * 1,3,5",
+                    "label":  "Mon/Wed/Fri at 6:00 AM",
+                    "approvalMode":  "semi_auto",
+                    "maxRunsPerWeek":  3
+                },
+    "maintenance":  {
+                        "enabled":  true,
+                        "cron":  "30 6 * * 1,3,5",
+                        "label":  "After factory run on Mon/Wed/Fri",
+                        "tasks":  [
+                                      "content_optimizer",
+                                      "affiliate_check",
+                                      "visual_check",
+                                      "duplicate_slug_check",
+                                      "agent_health_report"
+                                  ]
+                    },
+    "weeklyReview":  {
+                         "enabled":  true,
+                         "cron":  "0 8 * * 0",
+                         "label":  "Sunday at 8:00 AM",
+                         "tasks":  [
+                                       "self_improvement",
+                                       "content_quality_review",
+                                       "next_week_queue"
+                                   ]
+                     },
+    "qualityGates":  {
+                         "maxDuplicateSlugs":  0,
+                         "maxVisualIssues":  0,
+                         "maxPlaceholderProducts":  0,
+                         "maxAffiliateChecks":  2,
+                         "minimumTargetWordCount":  650
+                     },
+    "social":  {
+                   "enabled":  true,
+                   "cron":  "0 7 * * 1,2,3,4,5",
+                   "label":  "Weekdays at 7:00 AM draft review",
+                   "tasks":  [
+                                 "generate_social_queue",
+                                 "review_ready_posts",
+                                 "prepare_manual_posts"
+                             ]
+               }
+}

@@ -46,7 +46,11 @@ Pick the "winner" index — the single best topic to publish next based on searc
   });
 
   const parsed = JSON.parse(response.choices[0].message.content);
-  const winner = parsed.topics[parsed.winner];
+  // Slug becomes a file name and part of a shell git commit message, so normalize it and never reuse one.
+  const toSlug = (value) => String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  const candidates = (parsed.topics || []).map((t) => ({ ...t, slug: toSlug(t.slug || t.title) }));
+  const winner = [candidates[parsed.winner], ...candidates].find((t) => t?.slug && !existingSlugs.includes(t.slug));
+  if (!winner) throw new Error("Scout returned no topic with a new, valid slug.");
 
   info(AGENT, `Selected topic: "${winner.title}"`);
   info(AGENT, `Reason: ${winner.reason}`);
