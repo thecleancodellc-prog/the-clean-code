@@ -31,7 +31,7 @@ export async function run() {
 Title: "${title}"
 Excerpt: "${excerpt}"
 Categories: ${categories.join(", ")}
-Post URL: https://thecleancode.com/blog/${slug}
+Post URL: https://www.thecleancode.co/blog/${slug}
 
 Return JSON with:
 {
@@ -53,7 +53,7 @@ Return JSON with:
   const content = [
     `SOCIAL CONTENT — ${title}`,
     `Generated: ${new Date().toISOString()}`,
-    `URL: https://thecleancode.com/blog/${slug}`,
+    `URL: https://www.thecleancode.co/blog/${slug}`,
     "",
     "═══════════════════════════════════",
     "INSTAGRAM",

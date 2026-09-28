@@ -264,7 +264,7 @@ function drafts(post, config) {
   };
 }
 
-const config = readJson(CONFIG_FILE, { brand: { siteUrl: "https://thecleancode.com" }, platforms: {} });
+const config = readJson(CONFIG_FILE, { brand: { siteUrl: "https://www.thecleancode.co" }, platforms: {} });
 const existing = readJson(QUEUE_FILE, []);
 const existingBySlug = new Map(existing.map(item => [item.slug, item]));
 const queue = parsePosts().map(post => {

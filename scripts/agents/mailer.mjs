@@ -30,7 +30,7 @@ export async function run() {
 
 Title: "${title}"
 Excerpt: "${excerpt}"
-Post URL: https://thecleancode.com/blog/${slug}
+Post URL: https://www.thecleancode.co/blog/${slug}
 Categories: ${categories.join(", ")}
 Product spotlight: ${ctx.product ? `${ctx.product.title} — ${ctx.product.description}` : "none"}
 
@@ -82,7 +82,7 @@ Return JSON:
           name: `${title} — ${new Date().toLocaleDateString()}`,
           type: "regular",
           subject: email.subject,
-          from: "hello@thecleancode.com",
+          from: "support@thecleancode.co",
           from_name: "The Clean Code",
           content: { plain_text: email.body },
         }),

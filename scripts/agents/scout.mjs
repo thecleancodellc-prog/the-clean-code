@@ -16,6 +16,21 @@ export async function run() {
   // Load existing slugs so Scout avoids duplicates
   const postsSource = fs.readFileSync(path.join(ROOT, "data/posts.js"), "utf8");
   const existingSlugs = [...postsSource.matchAll(/slug:\s*["']([^"']+)["']/g)].map(m => m[1]);
+  // Post titles only (product titles sit inside `product: {` blocks and are indented deeper).
+  const existingTitles = [...postsSource.matchAll(/^\s{2}title:\s*"([^"]+)"/gm)].map(m => m[1]);
+
+  // Topic check: slugs alone let "green-home-gym-ideas" and "affordable-non-toxic-home-gym" both through.
+  const STOP = new Set("a an the and or for to of in on with your you how why what guide tips ways best top simple easy eco friendly non toxic sustainable green clean cleaner healthier healthy home homes living natural safe safer choices alternatives create creating make making beyond more less ideas practices budget affordable".split(" "));
+  const topicWords = (s) => new Set((String(s).toLowerCase().match(/[a-z]+/g) || []).filter(w => w.length > 2 && !STOP.has(w)).map(w => w.replace(/(ing|ies|es|s)$/, "")));
+  const existingTopics = [...existingSlugs.map(s => s.replace(/-/g, " ")), ...existingTitles].map(topicWords);
+  const overlapsExisting = (title) => {
+    const words = topicWords(title);
+    if (!words.size) return true;
+    return existingTopics.some((ex) => {
+      const shared = [...words].filter(w => ex.has(w)).length;
+      return shared / Math.min(words.size, ex.size || 1) >= 0.6 && shared >= Math.min(2, words.size);
+    });
+  };
 
   const response = await client.chat.completions.create({
     model: "gpt-4o",
@@ -26,10 +41,13 @@ export async function run() {
       },
       {
         role: "user",
-        content: `Generate 5 compelling blog topic ideas for our clean-living blog. Each should be specific, actionable, and SEO-friendly.
+        content: `Generate 8 compelling blog topic ideas for our clean-living blog. Each should be specific, actionable, and SEO-friendly.
 
-Existing topics to avoid (already published):
-${existingSlugs.map(s => `- ${s}`).join("\n")}
+Every topic must cover a subject NOT already covered below. A new angle on an existing subject (for example
+another home gym, laundry, nursery, or bathroom post) counts as a repeat — pick a genuinely different subject.
+
+Already published (do not repeat these subjects):
+${existingTitles.map(t => `- ${t}`).join("\n")}
 
 Respond with a JSON object:
 {
@@ -49,8 +67,9 @@ Pick the "winner" index — the single best topic to publish next based on searc
   // Slug becomes a file name and part of a shell git commit message, so normalize it and never reuse one.
   const toSlug = (value) => String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
   const candidates = (parsed.topics || []).map((t) => ({ ...t, slug: toSlug(t.slug || t.title) }));
-  const winner = [candidates[parsed.winner], ...candidates].find((t) => t?.slug && !existingSlugs.includes(t.slug));
-  if (!winner) throw new Error("Scout returned no topic with a new, valid slug.");
+  const winner = [candidates[parsed.winner], ...candidates].find((t) =>
+    t?.slug && !existingSlugs.includes(t.slug) && !overlapsExisting(`${t.title} ${t.slug.replace(/-/g, " ")}`));
+  if (!winner) throw new Error("Scout returned no topic that is new and doesn't repeat an existing post.");
 
   info(AGENT, `Selected topic: "${winner.title}"`);
   info(AGENT, `Reason: ${winner.reason}`);

@@ -89,7 +89,7 @@ function writePinterest(item, dir) {
   ${textLines(subtitle, 122, 1180, 32, "#38634a", 500, 1.22)}
   <rect x="118" y="1280" width="270" height="58" rx="29" fill="#65d58b"/>
   <text x="154" y="1320" font-size="26" font-weight="800" fill="#0d2f1e">READ GUIDE</text>
-  <text x="118" y="1410" font-size="27" font-weight="700" fill="#1d5435">thecleancode.com</text>`);
+  <text x="118" y="1410" font-size="27" font-weight="700" fill="#1d5435">thecleancode.co</text>`);
   const file = path.join(dir, "pinterest-pin.svg");
   fs.writeFileSync(file, svg, "utf8");
   return file;
