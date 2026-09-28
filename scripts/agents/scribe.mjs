@@ -3,10 +3,11 @@
 import OpenAI from "openai";
 import { readContext, writeContext } from "../lib/context.mjs";
 import { step, info } from "../lib/log.mjs";
+import { expandToLength, countWords } from "../lib/expand.mjs";
 
 const AGENT = "Scribe";
 
-const SYSTEM_PROMPT = `You are a content writer for "The Clean Code" — a wellness and eco-living blog focused on non-toxic, clean, and sustainable home living. Your tone is warm, practical, and direct. No fluff.
+export const SYSTEM_PROMPT = `You are a content writer for "The Clean Code" — a wellness and eco-living blog focused on non-toxic, clean, and sustainable home living. Your tone is warm, practical, and direct. No fluff.
 
 You write blog posts for a Next.js site. Return a single JSON object (no markdown, no code fences) with these fields:
 
@@ -24,7 +25,7 @@ You write blog posts for a Next.js site. Return a single JSON object (no markdow
 }
 
 Rules for the content field:
-- Write 800–1200 words of full HTML
+- Write 1100–1400 words of full HTML (deep, specific, practical; no filler)
 - Use <h2> for section headings, <p>, <ul>/<li>, <strong>, <em>
 - Internal links use class="text-green-400 hover:underline"
 - Place exactly 3 ad blocks at natural breaks using this exact HTML (increment the slot number):
@@ -68,6 +69,9 @@ Return only valid JSON — no markdown, no code fences.`,
   });
 
   const postData = JSON.parse(response.choices[0].message.content);
+  // gpt-4o returns ~500 words however hard the prompt asks; expand the draft until it's a real article.
+  postData.content = await expandToLength(client, postData, { minWords: 1000, targetWords: 1300, agent: AGENT });
+  info(AGENT, `Length: ${countWords(postData.content)} words`);
 
   info(AGENT, `Title: "${postData.title}"`);
   info(AGENT, `Categories: ${postData.categories.join(", ")}`);

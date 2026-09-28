@@ -1,0 +1,32 @@
+[
+  {
+    "source": "/blog/affordable-non-toxic-home-gym",
+    "destination": "/blog/green-home-gym-ideas",
+    "permanent": true
+  },
+  {
+    "source": "/blog/non-toxic-home-gym-safe-equipment-flooring",
+    "destination": "/blog/green-home-gym-ideas",
+    "permanent": true
+  },
+  {
+    "source": "/blog/hidden-laundry-toxins-mini",
+    "destination": "/blog/hidden-laundry-toxins",
+    "permanent": true
+  },
+  {
+    "source": "/blog/non-toxic-baby-nursery-guide",
+    "destination": "/blog/non-toxic-nursery-guide",
+    "permanent": true
+  },
+  {
+    "source": "/blog/zero-waste-bathroom-transition",
+    "destination": "/blog/minimalist-eco-friendly-bathroom-transition",
+    "permanent": true
+  },
+  {
+    "source": "/blog/transition-greener-home-electronics-guide",
+    "destination": "/blog/eco-friendly-home-electronics",
+    "permanent": true
+  }
+]

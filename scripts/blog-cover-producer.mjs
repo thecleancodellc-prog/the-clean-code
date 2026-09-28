@@ -29,6 +29,9 @@ function parseArgs() {
     apply: args.includes("--apply"),
     slug: value("slug") || "",
     limit: Number(value("limit") || 1),
+    skip: new Set((value("skip") || "").split(",").filter(Boolean)),
+    // Reuse an existing review copy instead of generating a new one (e.g. apply approved covers later).
+    reuse: args.includes("--reuse"),
   };
 }
 
@@ -163,7 +166,8 @@ async function applyCover(post, reviewFile) {
   if (!coverRe.test(source)) throw new Error(`Could not find cover for ${post.slug}`);
   const updated = source.slice(0, coverAt) + `cover: "${publicRel}"` + source.slice(coverRe.lastIndex);
   // Same guard as Publisher: never write a posts.js that would break the site build.
-  const tmp = path.join(os.tmpdir(), `tcc-posts-check-${process.pid}.mjs`);
+  // Unique name per check: ESM caches modules by URL, so reusing one path would re-validate stale content.
+  const tmp = path.join(os.tmpdir(), `tcc-posts-check-${process.pid}-${randomUUID()}.mjs`);
   fs.writeFileSync(tmp, updated);
   try {
     const { posts } = await import(pathToFileURL(tmp).href);
@@ -177,7 +181,7 @@ async function applyCover(post, reviewFile) {
 
 const options = parseArgs();
 const posts = await loadPosts();
-const candidates = posts.filter((p) => coverKind(p) !== "photo");
+const candidates = posts.filter((p) => coverKind(p) !== "photo" && !options.skip.has(p.slug));
 
 if (options.list) {
   for (const p of candidates) console.log(`${coverKind(p).padEnd(13)} ${p.slug}`);
@@ -196,7 +200,10 @@ const targets = options.slug
 let ok = 0;
 for (const post of targets) {
   try {
-    const file = await generate(post);
+    const existing = path.join(REVIEW_DIR, `${post.slug}.png`);
+    const reused = options.reuse && fs.existsSync(existing) && fs.existsSync(existing + ".safety.json");
+    if (reused) console.log(`[blog-cover] ${post.slug}: reusing screened review copy`);
+    const file = reused ? existing : await generate(post);
     if (options.apply) await applyCover(post, file);
     ok++;
   } catch (err) {

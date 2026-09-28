@@ -57,7 +57,7 @@ function serializePost(post) {
 // A syntax error in posts.js fails every Vercel build silently (Jul–Sep 2026: 20 posts never went live),
 // so load the new source as a module before writing it and refuse to publish if it doesn't parse.
 async function assertPostsSourceValid(source) {
-  const tmp = path.join(ROOT, "outputs", `.posts-check-${process.pid}.mjs`);
+  const tmp = path.join(ROOT, "outputs", `.posts-check-${process.pid}-${Date.now()}.mjs`); // unique: ESM caches by URL
   fs.mkdirSync(path.dirname(tmp), { recursive: true });
   fs.writeFileSync(tmp, source, "utf8");
   try {

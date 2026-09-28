@@ -70,8 +70,9 @@ function ShopContent() {
       <motion.section
         className="container py-12"
         initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.25 }}
+        // Animate on mount: with whileInView + amount 0.25 the tall grid never had 25% on a phone screen,
+        // so every product stayed at opacity 0 (invisible but clickable).
+        animate="visible"
         variants={staggerContainer}
       >
         {/* 🏷️ Title & Intro */}

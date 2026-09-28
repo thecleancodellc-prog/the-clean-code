@@ -58,7 +58,7 @@ export default function Home() {
           className="container mt-16"
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.25 }}
+          viewport={{ once: true, amount: "some" }}
           variants={staggerContainer}
         >
           <motion.div
@@ -115,7 +115,7 @@ export default function Home() {
             className="container mt-16"
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.25 }}
+            viewport={{ once: true, amount: "some" }}
             variants={staggerContainer}
           >
             <motion.div
@@ -162,7 +162,7 @@ export default function Home() {
           className="container mt-16"
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.25 }}
+          viewport={{ once: true, amount: "some" }}
           variants={staggerContainer}
         >
           <motion.div
