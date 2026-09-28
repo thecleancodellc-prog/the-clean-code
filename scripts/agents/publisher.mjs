@@ -3,6 +3,7 @@
 import fs from "fs";
 import path from "path";
 import { execSync } from "child_process";
+import { pathToFileURL } from "url";
 import { readContext, writeContext, ROOT } from "../lib/context.mjs";
 import { step, info, warn } from "../lib/log.mjs";
 
@@ -51,6 +52,25 @@ function serializePost(post) {
     `${indent}content: \`\n${post.content}\n  \`,\n` +
     `},`
   );
+}
+
+// A syntax error in posts.js fails every Vercel build silently (Jul–Sep 2026: 20 posts never went live),
+// so load the new source as a module before writing it and refuse to publish if it doesn't parse.
+async function assertPostsSourceValid(source) {
+  const tmp = path.join(ROOT, "outputs", `.posts-check-${process.pid}.mjs`);
+  fs.mkdirSync(path.dirname(tmp), { recursive: true });
+  fs.writeFileSync(tmp, source, "utf8");
+  try {
+    const { posts } = await import(pathToFileURL(tmp).href);
+    if (!Array.isArray(posts)) throw new Error("posts export is not an array");
+    const slugs = posts.map((p) => p.slug);
+    const dupes = slugs.filter((s, i) => slugs.indexOf(s) !== i);
+    if (dupes.length) throw new Error(`duplicate slugs: ${[...new Set(dupes)].join(", ")}`);
+  } catch (err) {
+    throw new Error(`data/posts.js would be invalid, not publishing: ${err.message}`);
+  } finally {
+    fs.rmSync(tmp, { force: true });
+  }
 }
 
 function gitPush(agent, post) {
@@ -114,6 +134,7 @@ export async function run() {
 
   const serialized = serializePost(post);
   const updated = source.slice(0, lastBracket) + serialized + "\n" + source.slice(lastBracket);
+  await assertPostsSourceValid(updated);
   fs.writeFileSync(POSTS_FILE, updated, "utf8");
 
   info(AGENT, `Post appended — slug: ${post.slug}`);
