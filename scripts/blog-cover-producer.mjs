@@ -147,7 +147,7 @@ async function getJson(url, options) {
   return res.json();
 }
 
-async function generate(post) {
+export async function generateLocalCover(post) {
   if (!/^[a-z0-9-]+$/.test(post.slug)) throw new Error(`Invalid slug: ${post.slug}`);
   const flow = workflow(promptFor(post), negativePrompt());
   const { prompt_id } = await getJson(`${base()}/prompt`, {
@@ -204,35 +204,42 @@ async function applyCover(post, reviewFile) {
   console.log(`[blog-cover] ${post.slug}: site cover -> ${publicRel}`);
 }
 
-const options = parseArgs();
-const posts = await loadPosts();
-const candidates = posts.filter((p) => coverKind(p) !== "photo" && !options.skip.has(p.slug));
-
-if (options.list) {
-  for (const p of candidates) console.log(`${coverKind(p).padEnd(13)} ${p.slug}`);
-  console.log(`\n${candidates.length} of ${posts.length} posts need a photo cover.`);
-  process.exit(0);
+export async function prepareLocalCoverGeneration() {
+  assertCheckpoint(process.env.COMFYUI_CHECKPOINT || SAFE_CHECKPOINT);
+  await checkImage("--check");
+  await getJson(`${base()}/system_stats`);
 }
 
-assertCheckpoint(process.env.COMFYUI_CHECKPOINT || SAFE_CHECKPOINT);
-await checkImage("--check");
-await getJson(`${base()}/system_stats`);
+async function main() {
+  const options = parseArgs();
+  const posts = await loadPosts();
+  const candidates = posts.filter((p) => coverKind(p) !== "photo" && !options.skip.has(p.slug));
 
-const targets = options.slug
-  ? [posts.find((p) => p.slug === options.slug) || (() => { throw new Error(`No post with slug ${options.slug}`); })()]
-  : candidates.slice(0, options.limit);
-
-let ok = 0;
-for (const post of targets) {
-  try {
-    const existing = path.join(REVIEW_DIR, `${post.slug}.png`);
-    const reused = options.reuse && fs.existsSync(existing) && fs.existsSync(existing + ".safety.json");
-    if (reused) console.log(`[blog-cover] ${post.slug}: reusing screened review copy`);
-    const file = reused ? existing : await generate(post);
-    if (options.apply) await applyCover(post, file);
-    ok++;
-  } catch (err) {
-    console.error(`[blog-cover] ${post.slug}: FAILED — ${err.message}`);
+  if (options.list) {
+    for (const p of candidates) console.log(`${coverKind(p).padEnd(13)} ${p.slug}`);
+    console.log(`\n${candidates.length} of ${posts.length} posts need a photo cover.`);
+    return;
   }
+
+  await prepareLocalCoverGeneration();
+  const targets = options.slug
+    ? [posts.find((p) => p.slug === options.slug) || (() => { throw new Error(`No post with slug ${options.slug}`); })()]
+    : candidates.slice(0, options.limit);
+
+  let ok = 0;
+  for (const post of targets) {
+    try {
+      const existing = path.join(REVIEW_DIR, `${post.slug}.png`);
+      const reused = options.reuse && fs.existsSync(existing) && fs.existsSync(existing + ".safety.json");
+      if (reused) console.log(`[blog-cover] ${post.slug}: reusing screened review copy`);
+      const file = reused ? existing : await generateLocalCover(post);
+      if (options.apply) await applyCover(post, file);
+      ok++;
+    } catch (err) {
+      console.error(`[blog-cover] ${post.slug}: FAILED — ${err.message}`);
+    }
+  }
+  console.log(`[blog-cover] Done: ${ok}/${targets.length} succeeded${options.apply ? " and applied" : " (review copies only; rerun with --apply to publish)"}.`);
 }
-console.log(`[blog-cover] Done: ${ok}/${targets.length} succeeded${options.apply ? " and applied" : " (review copies only; rerun with --apply to publish)"}.`);
+
+if (process.argv[1] && pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url) await main();

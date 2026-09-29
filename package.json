@@ -15,6 +15,8 @@
     "optimizer": "node --env-file=.env.local scripts/content-optimizer.mjs",
     "optimizer:fix-links": "node --env-file=.env.local scripts/fix-amazon-tags.mjs",
     "quality:test": "node scripts/test-content-quality.mjs",
+    "api:usage": "node --env-file=.env.local scripts/show-api-usage.mjs",
+    "api:budget-test": "node scripts/test-api-budget.mjs",
     "fact-check": "node --env-file=.env.local scripts/agents/fact-checker.mjs",
     "quality:repair": "node scripts/repair-content-quality.mjs",
     "maintenance": "node --env-file=.env.local scripts/routine-maintenance.mjs",

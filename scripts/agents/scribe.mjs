@@ -4,6 +4,7 @@ import OpenAI from "openai";
 import { readContext, writeContext } from "../lib/context.mjs";
 import { step, info } from "../lib/log.mjs";
 import { expandToLength, countWords } from "../lib/expand.mjs";
+import { budgetedChat } from "../lib/api-budget.mjs";
 
 const AGENT = "Scribe";
 
@@ -45,8 +46,9 @@ export async function run() {
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   const today = new Date().toISOString().split("T")[0];
 
-  const response = await client.chat.completions.create({
-    model: "gpt-4o",
+  const model = process.env.OPENAI_WRITING_MODEL || process.env.OPENAI_TEXT_MODEL || "gpt-4.1-mini";
+  const response = await budgetedChat(client, {
+    model,
     messages: [
       { role: "system", content: SYSTEM_PROMPT },
       {
@@ -71,11 +73,10 @@ Return only valid JSON — no markdown, no code fences.`,
       },
     ],
     response_format: { type: "json_object" },
-  });
+  }, { agent: AGENT, operation: "article draft", reserveUSD: 0.06 });
 
   const postData = JSON.parse(response.choices[0].message.content);
-  // gpt-4o returns ~500 words however hard the prompt asks; expand the draft until it's a real article.
-  postData.content = await expandToLength(client, postData, { minWords: 1000, targetWords: 1300, agent: AGENT });
+  postData.content = await expandToLength(client, postData, { minWords: 1000, targetWords: 1300, agent: AGENT, model });
   info(AGENT, `Length: ${countWords(postData.content)} words`);
 
   info(AGENT, `Title: "${postData.title}"`);

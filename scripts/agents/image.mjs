@@ -5,6 +5,9 @@ import fs from "fs";
 import path from "path";
 import { readContext, writeContext, ROOT } from "../lib/context.mjs";
 import { step, info, warn } from "../lib/log.mjs";
+import { budgetedImage } from "../lib/api-budget.mjs";
+import { generateLocalCover, prepareLocalCoverGeneration } from "../blog-cover-producer.mjs";
+import { convertToJpeg } from "../optimize-covers.mjs";
 
 const AGENT = "Image";
 
@@ -91,22 +94,36 @@ No text, no people, no logos. Soft greens and whites.
 Shot on a neutral background with natural props relevant to the topic.`;
 
   let coverResult;
+  const provider = String(process.env.FACTORY_IMAGE_PROVIDER || "local").toLowerCase();
   try {
-    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    const model = process.env.OPENAI_IMAGE_MODEL || "gpt-image-1";
-    const isDalle3 = model === "dall-e-3";
-    // Landscape covers. gpt-image-* rejects dall-e-3's "standard" quality (low|medium|high|auto only).
-    const size = process.env.OPENAI_IMAGE_SIZE || (isDalle3 ? "1792x1024" : "1536x1024");
-    const quality = process.env.OPENAI_IMAGE_QUALITY || (isDalle3 ? "standard" : "medium");
-
-    // gpt-image-* returns base64 PNGs (~2 MB) by default; ask for a compressed JPEG for the web.
-    const format = isDalle3 ? {} : { output_format: "jpeg", output_compression: 82 };
-    const imageResponse = await client.images.generate({ model, prompt, n: 1, size, quality, ...format });
-    coverResult = await saveGeneratedImage(imageResponse, slug, format.output_format === "jpeg" ? "jpg" : "png");
+    if (provider === "local") {
+      await prepareLocalCoverGeneration();
+      const reviewFile = await generateLocalCover({ slug, title });
+      const publicFile = path.join(ROOT, "public/images", `${slug}.jpg`);
+      const outputFile = path.join(ROOT, "outputs/images", `${slug}.jpg`);
+      fs.mkdirSync(path.dirname(publicFile), { recursive: true });
+      fs.mkdirSync(path.dirname(outputFile), { recursive: true });
+      convertToJpeg(reviewFile, publicFile);
+      fs.copyFileSync(publicFile, outputFile);
+      coverResult = { cover: `/images/${slug}.jpg`, coverImagePath: `public/images/${slug}.jpg` };
+    } else if (provider === "openai") {
+      const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+      const model = process.env.OPENAI_IMAGE_MODEL || "gpt-image-1";
+      const isDalle3 = model === "dall-e-3";
+      const size = process.env.OPENAI_IMAGE_SIZE || (isDalle3 ? "1792x1024" : "1536x1024");
+      const quality = process.env.OPENAI_IMAGE_QUALITY || (isDalle3 ? "standard" : "medium");
+      const format = isDalle3 ? {} : { output_format: "jpeg", output_compression: 82 };
+      const imageResponse = await budgetedImage(client, { model, prompt, n: 1, size, quality, ...format }, { agent: AGENT, operation: "cover image" });
+      coverResult = await saveGeneratedImage(imageResponse, slug, format.output_format === "jpeg" ? "jpg" : "png");
+    } else if (provider === "fallback") {
+      coverResult = writeFallbackCover(slug, title);
+    } else {
+      throw new Error(`Unknown FACTORY_IMAGE_PROVIDER: ${provider}`);
+    }
     info(AGENT, `Saved to ${coverResult.coverImagePath}`);
   } catch (err) {
-    warn(AGENT, `Image generation failed: ${err.message}`);
-    warn(AGENT, "Using local fallback cover so the factory can continue.");
+    warn(AGENT, `${provider} image generation failed: ${err.message}`);
+    warn(AGENT, "Using the zero-cost SVG fallback; paid image generation is never triggered automatically.");
     coverResult = writeFallbackCover(slug, title);
   }
 

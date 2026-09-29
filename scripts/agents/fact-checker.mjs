@@ -5,6 +5,7 @@ import OpenAI from "openai";
 import { readContext, writeContext, ROOT } from "../lib/context.mjs";
 import { inspectPost } from "../lib/content-quality.mjs";
 import { step, info } from "../lib/log.mjs";
+import { budgetedResponse } from "../lib/api-budget.mjs";
 
 const AGENT = "Fact Checker";
 const REPORT_DIR = path.join(ROOT, "outputs", "fact-checks");
@@ -107,7 +108,7 @@ export async function run() {
 
   if (!process.env.OPENAI_API_KEY) throw new Error("OPENAI_API_KEY is required for web fact checking.");
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-  const response = await client.responses.create({
+  const response = await budgetedResponse(client, {
     model: process.env.FACT_CHECK_MODEL || "gpt-4.1-mini",
     tools: [{ type: "web_search" }],
     tool_choice: "required",
@@ -130,7 +131,7 @@ export async function run() {
         schema: REPORT_SCHEMA,
       },
     },
-  });
+  }, { agent: AGENT, operation: "web fact check", reserveUSD: 0.05 });
 
   const report = JSON.parse(response.output_text);
   const searchedUrls = collectSearchUrls(response);

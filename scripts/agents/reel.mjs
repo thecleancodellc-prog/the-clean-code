@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import { readContext, writeContext, ROOT } from "../lib/context.mjs";
 import { step, info } from "../lib/log.mjs";
+import { budgetedChat } from "../lib/api-budget.mjs";
 
 const AGENT = "Reel";
 
@@ -17,8 +18,8 @@ export async function run() {
 
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-  const response = await client.chat.completions.create({
-    model: "gpt-4o",
+  const response = await budgetedChat(client, {
+    model: process.env.OPENAI_TEXT_MODEL || "gpt-4.1-mini",
     messages: [
       {
         role: "system",
@@ -52,7 +53,7 @@ Also include:
 - 5 recommended hashtags for reach`,
       },
     ],
-  });
+  }, { agent: AGENT, operation: "short-form script", reserveUSD: 0.02 });
 
   const script = response.choices[0].message.content;
 

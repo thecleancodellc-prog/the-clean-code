@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import { readContext, writeContext, ROOT } from "../lib/context.mjs";
 import { step, info } from "../lib/log.mjs";
+import { budgetedChat } from "../lib/api-budget.mjs";
 
 const AGENT = "Scout";
 
@@ -32,8 +33,9 @@ export async function run() {
     });
   };
 
-  const response = await client.chat.completions.create({
-    model: "gpt-4o",
+  const model = process.env.OPENAI_TEXT_MODEL || "gpt-4.1-mini";
+  const response = await budgetedChat(client, {
+    model,
     messages: [
       {
         role: "system",
@@ -61,7 +63,7 @@ Pick the "winner" index — the single best topic to publish next based on searc
       },
     ],
     response_format: { type: "json_object" },
-  });
+  }, { agent: AGENT, operation: "topic selection", reserveUSD: 0.03 });
 
   const parsed = JSON.parse(response.choices[0].message.content);
   // Slug becomes a file name and part of a shell git commit message, so normalize it and never reuse one.
@@ -76,15 +78,15 @@ Pick the "winner" index — the single best topic to publish next based on searc
 
   // Research the chosen topic in depth
   step(AGENT, "Gathering research notes...");
-  const researchResponse = await client.chat.completions.create({
-    model: "gpt-4o",
+  const researchResponse = await budgetedChat(client, {
+    model,
     messages: [
       {
         role: "user",
         content: `Research this topic thoroughly and summarize the most accurate, useful, and actionable information a reader would want to know:\n\n"${winner.title}"\n\nFocus on facts, tips, health/safety angles, and practical advice relevant to eco-friendly home living.`,
       },
     ],
-  });
+  }, { agent: AGENT, operation: "topic research", reserveUSD: 0.03 });
 
   const researchNotes = researchResponse.choices[0].message.content;
 

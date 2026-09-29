@@ -12,6 +12,7 @@ import { pathToFileURL } from "url";
 import { clearContext, readContext, ROOT } from "./lib/context.mjs";
 import { divider, step, info, error, done, warn } from "./lib/log.mjs";
 import { logAction } from "./lib/logger.mjs";
+import { formatOpenAIUsageSummary, getOpenAIUsageSummary, startOpenAIRun } from "./lib/api-budget.mjs";
 
 const ZIOMEK_DIR = process.env.ZIOMEK_DIR ?? path.resolve(ROOT, "../ziomek-city");
 
@@ -86,7 +87,7 @@ const PIPELINE = [
   { name: "Amazon",    fn: amazon,    desc: "Find affiliate product"         },
   { name: "Scribe",    fn: scribe,    desc: "Write full post"                },
   { name: "Fact Checker", fn: factCheck, desc: "Verify claims with cited web research" },
-  { name: "Image",     fn: image,     desc: "Generate cover image (DALL-E)"  },
+  { name: "Image",     fn: image,     desc: "Generate screened local cover"  },
   { name: "Publisher", fn: publisher, desc: "Append post to data/posts.js"   },
   { name: "Spark",     fn: spark,     desc: "Write social captions"          },
   { name: "Reel",      fn: reel,      desc: "Write short-form video script"  },
@@ -106,10 +107,12 @@ function countPosts() {
 
 export async function runFactory() {
   const startTime = Date.now();
+  startOpenAIRun(`factory-${new Date().toISOString()}`);
 
   divider("THE CLEAN CODE — CONTENT FACTORY");
   console.log(`  Started: ${new Date().toLocaleString()}`);
   console.log(`  Pipeline: ${PIPELINE.map((p) => p.name).join(" → ")}\n`);
+  console.log(`  API guard: ${formatOpenAIUsageSummary()}\n`);
 
   clearContext();
   initFactoryRun();
@@ -181,6 +184,7 @@ export async function runFactory() {
   if (results.skipped.length) {
     console.log(`  Skipped  : ${results.skipped.join(", ")}`);
   }
+  console.log(`  OpenAI   : ${formatOpenAIUsageSummary(getOpenAIUsageSummary())}`);
 
   done(`Factory run finished in ${elapsed}s`);
 
