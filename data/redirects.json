@@ -28,5 +28,10 @@
     "source": "/blog/transition-greener-home-electronics-guide",
     "destination": "/blog/eco-friendly-home-electronics",
     "permanent": true
+  },
+  {
+    "source": "/blog/sustainable-non-toxic-home-gym-flooring",
+    "destination": "/blog/green-home-gym-ideas",
+    "permanent": true
   }
 ]
