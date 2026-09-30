@@ -17,6 +17,21 @@ function cleanProductTitle(value) {
     .trim();
 }
 
+const PRODUCT_STOP = new Set("a an the and or for to of in on with your how guide best top eco friendly non toxic sustainable green clean natural healthy healthier home homes living product products".split(" "));
+const productStem = (word) => word.replace(/(ing|ies|es|s)$/, "");
+const productWords = (value) => (String(value || "").toLowerCase().match(/[a-z]+/g) || [])
+  .filter((word) => word.length > 2 && !PRODUCT_STOP.has(word))
+  .map(productStem);
+
+export function isProductRelevant(topic, title) {
+  const topicTerms = productWords(topic);
+  const titleTerms = productWords(title);
+  return topicTerms.some((topicTerm) => titleTerms.some((titleTerm) =>
+    topicTerm === titleTerm || (Math.min(topicTerm.length, titleTerm.length) >= 4 &&
+      (topicTerm.startsWith(titleTerm) || titleTerm.startsWith(topicTerm)))
+  ));
+}
+
 function isValidProduct(product) {
   if (!product?.asin || !/^[A-Z0-9]{10}$/i.test(product.asin)) return false;
   const title = cleanProductTitle(product.title);
@@ -161,7 +176,7 @@ async function tryStrategy3(browser, query) {
   }
 }
 
-async function scrapeAmazon(query) {
+async function scrapeAmazon(query, topic) {
   let browser;
   try {
     const { chromium } = await import('playwright');
@@ -180,11 +195,11 @@ async function scrapeAmazon(query) {
       step(AGENT, `  Trying strategy: ${name}…`);
       try {
         const result = await fn(browser, query);
-        if (isValidProduct(result)) {
+        if (isValidProduct(result) && isProductRelevant(topic, result.title)) {
           info(AGENT, `  Found via ${name}: ${result.title}`);
           return result;
         }
-        warn(AGENT, `  Strategy ${name}: no product found`);
+        warn(AGENT, `  Strategy ${name}: no relevant verified product found`);
       } catch (err) {
         warn(AGENT, `  Strategy ${name} failed: ${err.message}`);
       }
@@ -212,7 +227,7 @@ export async function run() {
   // Attempt Playwright scraping first
   step(AGENT, "Attempting Playwright Amazon scraping (3 strategies)…");
   try {
-    const scraped = await scrapeAmazon(searchQuery);
+    const scraped = await scrapeAmazon(searchQuery, ctx.topic);
     if (scraped) {
       product = {
         title:        scraped.title,

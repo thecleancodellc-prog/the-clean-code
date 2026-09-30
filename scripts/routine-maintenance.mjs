@@ -56,7 +56,8 @@ function buildAgentHealth(factoryStatus) {
   return Object.entries(agents).map(([name, agent]) => {
     const msg = String(agent.lastMessage || "");
     const issues = [];
-    if (/[<>]/.test(msg) || /\/gp\/prime|fallback_CTA|\.jpg|\.png/i.test(msg)) {
+    const suspiciousMediaText = name === "Amazon" && /\.jpg|\.png/i.test(msg);
+    if (/[<>]/.test(msg) || /\/gp\/prime|fallback_CTA/i.test(msg) || suspiciousMediaText) {
       issues.push("last message contains suspicious scraped HTML/media text");
     }
     if (agent.status === "error") issues.push("last run failed");
@@ -113,12 +114,44 @@ function runOptimizer() {
   };
 }
 
-export function buildOperationsStatus({ runOptimizerFirst = false } = {}) {
+function refreshSocialQueue() {
+  const result = spawnSync(process.execPath, ["--env-file=.env.local", "scripts/social-command-center.mjs"], {
+    cwd: ROOT,
+    encoding: "utf8",
+    timeout: 180_000,
+  });
+  return {
+    ok: result.status === 0,
+    status: result.status,
+    stdout: result.stdout?.trim() || "",
+    stderr: result.stderr?.trim() || "",
+  };
+}
+
+function runTopicAudit() {
+  const result = spawnSync(process.execPath, ["scripts/topic-audit.mjs"], {
+    cwd: ROOT,
+    encoding: "utf8",
+    timeout: 120_000,
+  });
+  return {
+    ok: result.status === 0,
+    status: result.status,
+    stdout: result.stdout?.trim() || "",
+    stderr: result.stderr?.trim() || "",
+  };
+}
+
+export function buildOperationsStatus({ runOptimizerFirst = false, refreshSocialFirst = false, runTopicAuditFirst = false } = {}) {
   const routines = readJson(ROUTINES_FILE, {});
   const optimizerRun = runOptimizerFirst ? runOptimizer() : { ok: null, skipped: true };
+  const socialRefresh = refreshSocialFirst ? refreshSocialQueue() : { ok: null, skipped: true };
+  const topicAuditRun = runTopicAuditFirst ? runTopicAudit() : { ok: null, skipped: true };
   const auditPath = latestFile("content-audit-");
   const repairPath = latestFile("repair-plan-");
+  const topicAuditPath = latestFile("topic-audit-");
   const audit = auditPath ? readJson(auditPath, {}) : {};
+  const topicAudit = topicAuditPath ? readJson(topicAuditPath, {}) : {};
   const factoryStatus = readJson(STATUS_FILE, {});
   const gateStatus = buildGateStatus(routines, audit);
 
@@ -145,7 +178,9 @@ export function buildOperationsStatus({ runOptimizerFirst = false } = {}) {
     contentQuality: {
       auditPath,
       repairPath,
+      topicAuditPath,
       actualPosts: countPosts(),
+      topicClustersToReview: topicAudit.summary?.clusters || 0,
       duplicatePairs: (audit.duplicatePairs || []).length,
       highDuplicatePairs: (audit.duplicatePairs || []).filter(pair => pair.severity === "high").length,
       thinPosts: (audit.thinPosts || []).length,
@@ -158,6 +193,8 @@ export function buildOperationsStatus({ runOptimizerFirst = false } = {}) {
     },
     qualityGates: gateStatus,
     socialCommand: latestSocialStatus(),
+    socialRefresh,
+    topicAuditRun,
     optimizerRun,
     ziomekSummary: gateStatus.status === "healthy"
       ? "The Clean Code routine systems are healthy. Continue scheduled publishing and weekly review."
@@ -170,7 +207,7 @@ export function buildOperationsStatus({ runOptimizerFirst = false } = {}) {
 }
 
 if (process.argv[1] && process.argv[1].endsWith("routine-maintenance.mjs")) {
-  const status = buildOperationsStatus({ runOptimizerFirst: true });
+  const status = buildOperationsStatus({ runOptimizerFirst: true, refreshSocialFirst: true, runTopicAuditFirst: true });
   console.log(`Operations status written: ${OPS_FILE}`);
   console.log(`Quality status: ${status.qualityGates.status}`);
   console.log(`Top actions: ${status.qualityGates.remainingTopActions.length}`);

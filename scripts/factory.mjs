@@ -73,7 +73,7 @@ function readRoutineConfig() {
 async function runMaintenance(reason = "manual") {
   try {
     const { buildOperationsStatus } = await import("./routine-maintenance.mjs");
-    const status = buildOperationsStatus({ runOptimizerFirst: true });
+    const status = buildOperationsStatus({ runOptimizerFirst: true, refreshSocialFirst: true, runTopicAuditFirst: true });
     info("Maintenance", `${reason}: ${status.qualityGates.status}`);
     return status;
   } catch (err) {

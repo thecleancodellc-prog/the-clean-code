@@ -3,9 +3,13 @@
 import OpenAI from "openai";
 import fs from "fs";
 import path from "path";
+import os from "os";
+import { randomUUID } from "crypto";
+import { pathToFileURL } from "url";
 import { readContext, writeContext, ROOT } from "../lib/context.mjs";
 import { step, info } from "../lib/log.mjs";
 import { budgetedChat } from "../lib/api-budget.mjs";
+import { isTopicRepeat } from "../lib/topic-overlap.mjs";
 
 const AGENT = "Scout";
 
@@ -19,6 +23,14 @@ export async function run() {
   const existingSlugs = [...postsSource.matchAll(/slug:\s*["']([^"']+)["']/g)].map(m => m[1]);
   // Post titles only (product titles sit inside `product: {` blocks and are indented deeper).
   const existingTitles = [...postsSource.matchAll(/^\s{2}title:\s*"([^"]+)"/gm)].map(m => m[1]);
+  const postsTemp = path.join(os.tmpdir(), `tcc-scout-posts-${randomUUID()}.mjs`);
+  fs.writeFileSync(postsTemp, postsSource, "utf8");
+  let existingPosts;
+  try {
+    existingPosts = (await import(pathToFileURL(postsTemp).href)).posts;
+  } finally {
+    fs.rmSync(postsTemp, { force: true });
+  }
 
   // Topic check: slugs alone let "green-home-gym-ideas" and "affordable-non-toxic-home-gym" both through.
   const STOP = new Set("a an the and or for to of in on with your you how why what guide tips ways best top simple easy eco friendly non toxic sustainable green clean cleaner healthier healthy home homes living natural safe safer choices alternatives create creating make making beyond more less ideas practices budget affordable".split(" "));
@@ -70,7 +82,9 @@ Pick the "winner" index — the single best topic to publish next based on searc
   const toSlug = (value) => String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
   const candidates = (parsed.topics || []).map((t) => ({ ...t, slug: toSlug(t.slug || t.title) }));
   const winner = [candidates[parsed.winner], ...candidates].find((t) =>
-    t?.slug && !existingSlugs.includes(t.slug) && !overlapsExisting(`${t.title} ${t.slug.replace(/-/g, " ")}`));
+    t?.slug && !existingSlugs.includes(t.slug) &&
+    !overlapsExisting(`${t.title} ${t.slug.replace(/-/g, " ")}`) &&
+    !existingPosts.some((post) => isTopicRepeat(t, post)));
   if (!winner) throw new Error("Scout returned no topic that is new and doesn't repeat an existing post.");
 
   info(AGENT, `Selected topic: "${winner.title}"`);

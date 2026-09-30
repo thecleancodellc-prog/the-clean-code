@@ -81,6 +81,27 @@ function collectSearchUrls(response) {
   return urls;
 }
 
+const AUTHORITY_HOSTS = [
+  ".gov", ".edu", "who.int", "nih.gov", "cdc.gov", "epa.gov", "fda.gov", "usda.gov",
+  "ul.com", "scsglobalservices.com", "oeko-tex.com", "c2ccertified.org", "fsc.org",
+  "astm.org", "nsf.org", "avma.org",
+];
+
+export function requiresAuthoritativeSource(content) {
+  return /\b(health|medical|veterinar|child safety|chemical|voc\b|volatile organic|fire|electri|mold|food safety|certif|standard|astm|greenguard|floorscore|oeko|cradle to cradle|fsc\b|air quality|toxic|carcinogen|endocrine|phthalate|formaldehyde|heavy metal)\b/i.test(String(content || ""));
+}
+
+export function hasAuthoritativeSource(sources = []) {
+  return sources.some((source) => {
+    try {
+      const host = new URL(source.url).hostname.toLowerCase();
+      return AUTHORITY_HOSTS.some((allowed) => allowed.startsWith(".") ? host.endsWith(allowed) : host === allowed || host.endsWith(`.${allowed}`));
+    } catch {
+      return false;
+    }
+  });
+}
+
 export async function run() {
   const ctx = readContext();
   const post = ctx.postData;
@@ -138,10 +159,23 @@ export async function run() {
   const unsupportedCitations = report.findings.flatMap((finding) =>
     finding.sourceUrls.filter((url) => !searchedUrls.has(normalizeSourceUrl(url)))
   );
-  if (report.findings.length && (!searchedUrls.size || unsupportedCitations.length)) {
+  const unsupportedSources = report.sources.filter((source) => !searchedUrls.has(normalizeSourceUrl(source.url)));
+  if (!searchedUrls.size || unsupportedCitations.length || unsupportedSources.length) {
     report.approved = false;
     report.riskLevel = "high";
-    report.summary = `${report.summary} Citation validation failed; one or more finding URLs were not returned by web search.`;
+    report.summary = `${report.summary} Citation validation failed; one or more reported URLs were not returned by web search.`;
+  }
+  if (requiresAuthoritativeSource(post.content) && !hasAuthoritativeSource(report.sources)) {
+    report.approved = false;
+    report.riskLevel = "high";
+    report.findings.push({
+      claim: "Health, safety, or certification claims",
+      severity: "high",
+      reason: "The search report did not include a government, university, standards-body, certification-owner, or recognized medical/veterinary source.",
+      recommendation: "Verify the relevant claims against at least one primary or authoritative source before publishing.",
+      sourceUrls: [],
+    });
+    report.summary = `${report.summary} Authoritative sourcing is required for this article's higher-risk claims.`;
   }
   const reportPath = saveReport(post.slug, report);
   writeContext({ factCheck: { ...report, reportPath } });
